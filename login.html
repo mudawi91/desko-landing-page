@@ -1,189 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>DeskGo – Login (Coming Soon)</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="DeskGo Login Page - Coming Soon.">
-	<link rel="icon" type="image/png" href="./favicon.png"> <style>
-		/* BASE STYLES - Consolidated */
-		* {
-			box-sizing: border-box;
-			margin: 0;
-			padding: 0;
-		}
-		body {
-			font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-			line-height: 1.5;
-			color: #111827;
-			background-color: #f9fafb;
-			display: flex;
-			flex-direction: column;
-			min-height: 100vh;
-		}
-		a {
-			text-decoration: none;
-			color: inherit;
-		}
-		.container {
-			max-width: 1120px;
-			margin: 0 auto;
-			padding: 0 1.5rem;
-		}
-		header {
-			position: sticky;
-			top: 0;
-			z-index: 10;
-			background: rgba(249, 250, 251, 0.9);
-			backdrop-filter: blur(10px);
-			border-bottom: 1px solid #e5e7eb;
-		}
-		.header-inner {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			padding: 0 0; 
-			height: 80px; 
-		}
-		.logo img {
-			/* RELATIVE PATH for GitHub Pages */
-			src: "./logo.png";
-			height: 150px; 
-			vertical-align: middle;
-		}
+    <meta charset="UTF-8">
+    <title>Login - DeskGo (Coming Soon)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="./favicon.png"> 
+    <style>
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #111827; /* Dark background for sleek look */
+            color: #f9fafb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
 
-		/* BUTTON STYLES (Includes Motion Base) */
-		.btn {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			padding: 0.5rem 1rem;
-			border-radius: 999px;
-			font-size: 0.9rem;
-			font-weight: 500;
-			border: 1px solid transparent;
-			cursor: pointer;
-			transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-			
-			/* MOTION STYLES applied to all buttons */
-			opacity: 0;
-			transform: translateY(10px);
-			animation: fadeInUp 0.8s ease-out 0.6s forwards; /* Applies to main content buttons */
-		}
-		.btn-outline {
-			border-color: #d1d5db;
-			background-color: white;
-			color: #111827;
-		}
-		.btn-outline:hover {
-			background-color: #f3f4f6;
-		}
-		.btn-primary {
-			background: #2563eb;
-			color: white;
-			box-shadow: 0 10px 15px -3px rgba(37,99,235,0.25);
-		}
-		.btn-primary:hover {
-			background: #1d4ed8;
-		}
+        /* Container for content and motion */
+        .coming-soon-container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            /* Motion: Initial state is scaled down and slightly transparent */
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+            animation: fadeInScale 1s ease-out forwards;
+        }
 
-		/* LOGIN PAGE SPECIFIC STYLES */
-		main {
-			flex-grow: 1;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			padding: 4rem 0;
-			text-align: center;
-		}
-		.content-box {
-			background: white;
-			border: 1px solid #e5e7eb;
-			border-radius: 1rem;
-			padding: 3rem 2rem;
-			max-width: 400px;
-			box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-		}
-		
-		/* TITLE (Specific Motion Timing) */
-		.title {
-			font-size: 2rem;
-			font-weight: 800;
-			margin-bottom: 0.5rem;
-			color: #111827;
-			opacity: 0;
-			transform: translateY(10px);
-			animation: fadeInUp 0.8s ease-out 0.4s forwards;
-		}
-		
-		/* SUBTITLE (Specific Motion Timing) */
-		.subtitle {
-			font-size: 1rem;
-			color: #4b5563;
-			margin-bottom: 1.5rem;
-			opacity: 0;
-			transform: translateY(10px);
-			animation: fadeInUp 0.8s ease-out 0.5s forwards;
-		}
+        /* Animation Keyframes for smooth entrance */
+        @keyframes fadeInScale {
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
 
-		/* Animation Keyframes Definition */
-		@keyframes fadeInUp {
-			to {
-				opacity: 1;
-				transform: translateY(0);
-			}
-		}
+        /* Title styling with bold font */
+        .title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            letter-spacing: -0.05em;
+        }
 
-		.footer {
-			border-top: 1px solid #e5e7eb;
-			padding: 1.75rem 0;
-			font-size: 0.9rem;
-			color: #6b7280;
-			margin-top: auto;
-		}
-		.footer-inner {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			flex-wrap: wrap;
-			gap: 0.75rem;
-		}
-	</style>
+        /* Subtitle styling */
+        .subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.5rem);
+            color: #d1d5db;
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        /* Badge/Status styling */
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 999px;
+            background: #2563eb;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            /* Subtle breathing animation */
+            animation: pulseFade 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseFade {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235, 0.5); }
+            50% { box-shadow: 0 0 0 10px rgba(37,99,235, 0); }
+        }
+
+        /* Back to Home Button (Primary Style) */
+        .btn-home {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #4b5563;
+            color: #d1d5db;
+            background: transparent;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+        }
+        .btn-home:hover {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+            transform: translateY(-2px);
+        }
+        
+        /* Waitlist Button (Secondary Style) */
+        .btn-waitlist {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            color: white;
+            background: #2563eb;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 5px 15px -3px rgba(37,99,235,0.4);
+            margin-right: 1rem;
+        }
+        .btn-waitlist:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(37,99,235,0.6);
+        }
+
+
+        /* Optional: Background gradient and noise for rich UI */
+        .background-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.15) 0%, transparent 40%);
+        }
+    </style>
 </head>
 <body>
-	<header>
-		<div class="container header-inner">
-			<a href="index.html" class="logo">
-				<img src="./logo.png" alt="DeskGo Logo">
-			</a>
-			<nav class="nav-actions">
-				<a href="index.html#waitlist-form" class="btn btn-primary">Join Waitlist</a>
-			</nav>
-		</div>
-	</header>
-
-	<main>
-		<div class="content-box">
-			<h1 class="title">Login Coming Soon!</h1>
-			<p class="subtitle">
-				We are still preparing for launch. Please join our waitlist for early access.
-			</p>
-			
-			<a href="https://docs.google.com/forms/d/e/1FAIpQLSfYNEowWvO2rWzv9-BG0_gda03QCQ0cJ5VD_FeD_Z-DPUnxuw/viewform?usp=dialog" class="btn btn-primary" style="width: 100%;" target="_blank">
-				Go to Waitlist Form
-			</a>
-			
-			<a href="index.html" class="btn btn-outline" style="width: 100%; margin-top: 0.75rem;">
-				Back to Homepage
-			</a>
-		</div>
-	</main>
-
-	<footer class="footer">
-		<div class="container footer-inner">
-			<div>DeskGo © 2025</div>
-			<div>Built for small teams who want IT to be simple.</div>
-		</div>
-	</footer>
+    <div class="background-effect"></div>
+    <div class="coming-soon-container">
+        <div class="badge">In Active Development</div>
+        <h1 class="title">Login is Coming Soon</h1>
+        <p class="subtitle">
+            We are finalizing the security and performance systems to ensure the best possible experience. Join the waitlist below to get early access.
+        </p>
+        
+        <div style="margin-top: 2rem;">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfYNEowWvO2rWzv9-BG0_gda03QCQ0cJ5VD_FeD_Z-DPUnxuw/viewform?usp=dialog" class="btn-waitlist" target="_blank">
+                Join Waitlist
+            </a>
+            
+            <a href="index.html" class="btn-home">
+                Back to Homepage
+            </a>
+        </div>
+    </div>
 </body>
 </html>
