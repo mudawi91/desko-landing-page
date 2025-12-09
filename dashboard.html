@@ -54,11 +54,14 @@
             flex-shrink: 0;
             overflow-y: auto;
         }
+        /* LOGO STYLED FOR IMAGE */
         .sidebar-logo {
-            font-size: 1.5rem;
-            font-weight: 800;
             margin-bottom: 2rem;
             display: block;
+        }
+        .sidebar-logo img {
+            height: 40px; /* Smaller height suitable for a sidebar */
+            vertical-align: middle;
         }
         .nav-item {
             display: flex;
@@ -297,7 +300,9 @@
 <body>
     <div class="main-layout">
         <div class="sidebar">
-            <a href="index.html" class="sidebar-logo deskgo-blue">DeskGo</a>
+            <a href="index.html" class="sidebar-logo">
+                <img src="./logo.png" alt="DeskGo Logo" style="height: 40px;">
+            </a>
             
             <a href="#" class="nav-item">
                 <span class="nav-icon">📊</span> Dashboard
