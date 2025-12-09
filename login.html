@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - DeskGo (Coming Soon)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #111827; /* Dark background for sleek look */
+            color: #f9fafb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Container for content and motion */
+        .coming-soon-container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            /* Motion: Initial state is scaled down and slightly transparent */
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+            animation: fadeInScale 1s ease-out forwards;
+        }
+
+        /* Animation Keyframes for smooth entrance */
+        @keyframes fadeInScale {
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Title styling with bold font */
+        .title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            letter-spacing: -0.05em;
+        }
+
+        /* Subtitle styling */
+        .subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.5rem);
+            color: #d1d5db;
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        /* Badge/Status styling */
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 999px;
+            background: #2563eb;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            /* Subtle breathing animation */
+            animation: pulseFade 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseFade {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235, 0.5); }
+            50% { box-shadow: 0 0 0 10px rgba(37,99,235, 0); }
+        }
+
+        /* Back to Home Button */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #4b5563;
+            color: #d1d5db;
+            background: transparent;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+        }
+        .btn:hover {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+            transform: translateY(-2px); /* Motion effect on hover */
+        }
+
+        /* Optional: Background gradient and noise for rich UI */
+        .background-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.15) 0%, transparent 40%);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-effect"></div>
+    <div class="coming-soon-container">
+        <div class="badge">In Active Development</div>
+        <h1 class="title">Login is Coming Soon</h1>
+        <p class="subtitle">
+            We are finalizing the security and performance systems to ensure the best possible experience. Follow us for launch updates!
+        </p>
+        <a href="index-ready.html" class="btn">Back to Homepage</a>
+    </div>
+</body>
+</html>

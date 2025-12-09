@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>DeskGo – Simple, Fast Service Desk for Small IT Teams</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="DeskGo is a simple, fast service desk built for small IT teams, with modern UI, automations, and English + Arabic support.">
+	<style>
+		/* BASE STYLES */
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+		body {
+			font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+			line-height: 1.5;
+			color: #111827;
+			background-color: #f9fafb;
+		}
+		a {
+			text-decoration: none;
+			color: inherit;
+		}
+		.container {
+			max-width: 1120px;
+			margin: 0 auto;
+			padding: 0 1.5rem;
+		}
+		header {
+			position: sticky;
+			top: 0;
+			z-index: 10;
+			background: rgba(249, 250, 251, 0.9);
+			backdrop-filter: blur(10px);
+			border-bottom: 1px solid #e5e7eb;
+		}
+		/* HEADER FIX APPLIED HERE */
+		.header-inner {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0 0; 
+			height: 80px; /* Fixed height to control the menu bar size */
+		}
+		/* LOGO STYLES */
+		.logo {
+			display: inline-block;
+		}
+		.logo img {
+			height: 150px; /* Logo size based on your current setting */
+			vertical-align: middle;
+		}
+		.nav-actions {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+		}
+		/* BUTTON STYLES (UPDATED for Motion Effects) */
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0.5rem 1rem;
+			border-radius: 999px;
+			font-size: 0.9rem;
+			font-weight: 500;
+			border: 1px solid transparent;
+			cursor: pointer;
+			transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+		}
+		.btn-outline {
+			border-color: #d1d5db;
+			background-color: white;
+			color: #111827;
+		}
+		.btn-outline:hover {
+			background-color: #f3f4f6;
+			border-color: #a1a1aa;
+			transform: translateY(-1px);
+		}
+		.btn-primary {
+			background: #2563eb;
+			color: white;
+			box-shadow: 0 10px 15px -3px rgba(37,99,235,0.25);
+		}
+		.btn-primary:hover {
+			background: #1d4ed8;
+			transform: translateY(-2px);
+			box-shadow: 0 10px 20px -5px rgba(37,99,235,0.4);
+		}
+		/* REMAINDER OF CSS */
+		main {
+			padding-bottom: 4rem;
+		}
+		section {
+			padding: 3rem 0;
+		}
+		.section-muted {
+			background-color: #ffffff;
+		}
+		.section-alt {
+			background-color: #f3f4f6;
+		}
+		.section-heading {
+			font-size: 1rem;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			color: #6b7280;
+			margin-bottom: 0.5rem;
+		}
+		.section-title {
+			font-size: 1.75rem;
+			font-weight: 700;
+			color: #111827;
+			margin-bottom: 0.75rem;
+		}
+		.section-subtitle {
+			color: #4b5563;
+			max-width: 40rem;
+			margin-bottom: 1.25rem;
+		}
+		.grid {
+			display: grid;
+			gap: 1.75rem;
+		}
+		.grid-2 {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+		.list {
+			list-style: none;
+			margin-top: 0.5rem;
+		}
+		.list li {
+			position: relative;
+			padding-left: 1.25rem;
+			margin-bottom: 0.4rem;
+			color: #374151;
+		}
+		.list li::before {
+			content: "•";
+			position: absolute;
+			left: 0;
+			color: #2563eb;
+		}
+		.badge {
+			display: inline-flex;
+			align-items: center;
+			padding: 0.15rem 0.55rem;
+			border-radius: 999px;
+			font-size: 0.7rem;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			background-color: #dbeafe;
+			color: #1d4ed8;
+		}
+		.hero {
+			padding: 4rem 0 3rem;
+		}
+		.hero-title {
+			font-size: clamp(2rem, 4vw, 2.75rem);
+			font-weight: 800;
+			color: #111827;
+			margin-bottom: 0.75rem;
+			/* Motion: Starts hidden, animates on load */
+			opacity: 0;
+			transform: translateY(10px);
+			animation: fadeInUp 0.8s ease-out 0.4s forwards;
+		}
+		.hero-subtitle {
+			font-size: 1.05rem;
+			color: #4b5563;
+			max-width: 32rem;
+			margin-bottom: 1.5rem;
+			/* Motion: Starts hidden, animates on load (slight delay) */
+			opacity: 0;
+			transform: translateY(10px);
+			animation: fadeInUp 0.8s ease-out 0.5s forwards;
+		}
+		.hero-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.75rem;
+			align-items: center;
+			margin-bottom: 1.5rem;
+			/* Motion: Starts hidden, animates on load (more delay) */
+			opacity: 0;
+			transform: translateY(10px);
+			animation: fadeInUp 0.8s ease-out 0.6s forwards;
+		}
+		.hero-footnote {
+			font-size: 0.85rem;
+			color: #6b7280;
+		}
+		.hero-aside {
+			border-radius: 1.25rem;
+			background: white;
+			border: 1px solid #e5e7eb;
+			padding: 1.5rem;
+			box-shadow: 0 15px 30px -15px rgba(15, 23, 42, 0.25);
+			/* Motion: Starts hidden, animates on load (slight delay) */
+			opacity: 0;
+			transform: translateY(10px);
+			animation: fadeInUp 0.8s ease-out 0.7s forwards;
+		}
+		
+		/* NEW: Animation Keyframes for loading motion */
+		@keyframes fadeInUp {
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.hero-aside-title {
+			font-size: 1rem;
+			font-weight: 600;
+			margin-bottom: 0.5rem;
+		}
+		.hero-aside-list {
+			list-style: none;
+			margin-top: 0.5rem;
+		}
+		.hero-aside-list li {
+			display: flex;
+			align-items: center;
+			gap: 0.4rem;
+			font-size: 0.9rem;
+			color: #374151;
+			margin-bottom: 0.3rem;
+		}
+		.hero-aside-list span {
+			font-size: 1rem;
+			color: #16a34a;
+		}
+		.columns {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 1.5rem;
+		}
+		.card {
+			background: white;
+			border-radius: 0.9rem;
+			border: 1px solid #e5e7eb;
+			padding: 1.25rem;
+		}
+		.card-title {
+			font-size: 1rem;
+			font-weight: 600;
+			margin-bottom: 0.4rem;
+		}
+		.card-body {
+			font-size: 0.95rem;
+			color: #4b5563;
+		}
+		.pricing-list {
+			list-style: none;
+			margin-top: 0.75rem;
+		}
+		.pricing-list li {
+			margin-bottom: 0.4rem;
+			color: #111827;
+		}
+		.pricing-note {
+			font-size: 0.85rem;
+			color: #6b7280;
+			margin-top: 0.4rem;
+		}
+		.steps {
+			display: grid;
+			gap: 1rem;
+		}
+		.step {
+			display: flex;
+			align-items: flex-start;
+			gap: 0.9rem;
+		}
+		.step-number {
+			width: 2rem;
+			height: 2rem;
+			border-radius: 999px;
+			background-color: #2563eb;
+			color: white;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 0.9rem;
+			font-weight: 600;
+			flex-shrink: 0;
+		}
+		.step-content-title {
+			font-weight: 600;
+			margin-bottom: 0.2rem;
+		}
+		.step-content-text {
+			font-size: 0.95rem;
+			color: #4b5563;
+		}
+		.footer {
+			border-top: 1px solid #e5e7eb;
+			padding: 1.75rem 0;
+			font-size: 0.9rem;
+			color: #6b7280;
+		}
+		.footer-inner {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			flex-wrap: wrap;
+			gap: 0.75rem;
+		}
+		@media (max-width: 800px) {
+			.grid-2 {
+				grid-template-columns: 1fr;
+			}
+			.columns {
+				grid-template-columns: 1fr;
+			}
+			.header-inner {
+				gap: 0.75rem;
+			}
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<div class="container header-inner">
+			<a href="#" class="logo">
+				<img src="/Users/Mudwawi/Downloads/logo.png" alt="DeskGo Logo">
+			</a>
+			<nav class="nav-actions">
+				<a href="login.html" class="btn btn-outline">Login</a>
+				<a href="https://docs.google.com/forms/d/e/1FAIpQLSfYNEowWvO2rWzv9-BG0_gda03QCQ0cJ5VD_FeD_Z-DPUnxuw/viewform?usp=dialog" class="btn btn-primary" target="_blank">Join Waitlist</a>
+			</nav>
+		</div>
+	</header>
+
+	<main>
+		<section class="hero">
+			<div class="container grid grid-2">
+				<div>
+					<div class="badge">For small IT teams</div>
+					<h1 class="hero-title">Simple, Fast Service Desk for Small IT Teams</h1>
+					<p class="hero-subtitle">
+						Stop fighting bloated ITSM tools. DeskGo gives you a clean, modern service desk that just works — with zero setup headaches.
+					</p>
+
+					<div class="hero-actions">
+						<a href="https://docs.google.com/forms/d/e/1FAIpQLSfYNEowWvO2rWzv9-BG0_gda03QCQ0cJ5VD_FeD_Z-DPUnxuw/viewform?usp=dialog" class="btn btn-primary" target="_blank">Join Waitlist</a>
+						<a href="#features" class="btn btn-outline">View Features</a>
+					</div>
+
+					<p class="hero-footnote">
+						Built for 1–5 IT agents who want less chaos and more clarity.
+					</p>
+				</div>
+
+				<aside class="hero-aside">
+					<h2 class="hero-aside-title">Be the first to try DeskGo</h2>
+					<p class="hero-footnote">Early testers receive:</p>
+					<ul class="hero-aside-list">
+						<li><span>✔</span>Lifetime discount</li>
+						<li><span>✔</span>Priority support</li>
+						<li><span>✔</span>Influence on product roadmap</li>
+						<li><span>✔</span>Access before public launch</li>
+					</ul>
+					<div style="margin-top: 1rem;">
+						<a id="waitlist-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSfYNEowWvO2rWzv9-BG0_gda03QCQ0cJ5VD_FeD_Z-DPUnxuw/viewform?usp=dialog" class="btn btn-primary" style="width: 100%; justify-content: center;" target="_blank">Join Waitlist</a>
+					</div>
+				</aside>
+			</div>
+		</section>
+
+		<section class="section-alt">
+			<div class="container">
+				<p class="section-heading">The Problem</p>
+				<h2 class="section-title">Why DeskGo Exists</h2>
+				<p class="section-subtitle">
+					Small IT teams don’t need enterprise-level complexity. They need something quick, organized, and effortless.
+				</p>
+
+				<h3 style="font-weight: 600; margin-bottom: 0.5rem;">Common pain points:</h3>
+				<ul class="list">
+					<li>Slow, outdated interface</li>
+					<li>Complicated setup requiring expert knowledge</li>
+					<li>Too many unused features</li>
+					<li>Bad Arabic / RTL support</li>
+					<li>No automation for repetitive tasks</li>
+					<li>Agents drowning in tickets</li>
+				</ul>
+
+				<p style="margin-top: 1rem; font-weight: 600;">
+					DeskGo solves all of this.
+				</p>
+			</div>
+		</section>
+
+		<section class="section-muted">
+			<div class="container">
+				<p class="section-heading">The Solution</p>
+				<h2 class="section-title">A Modern Service Desk Built for Efficiency</h2>
+				<p class="section-subtitle">
+					DeskGo gives you everything you actually need — nothing you don’t.
+				</p>
+
+				<h3 style="font-weight: 600; margin-bottom: 0.5rem;">Key benefits:</h3>
+				<ul class="list">
+					<li>Clean, modern UI</li>
+					<li>Fast ticketing</li>
+					<li>Built-in automation</li>
+					<li>English + Arabic support</li>
+					<li>Easy setup</li>
+					<li>Light, affordable, practical</li>
+				</ul>
+			</div>
+		</section>
+
+		<section id="features" class="section-alt">
+			<div class="container">
+				<p class="section-heading">Features</p>
+				<h2 class="section-title">What Makes DeskGo Different</h2>
+
+				<div class="columns">
+					<div class="card">
+						<h3 class="card-title">1. Instant Setup Wizard</h3>
+						<p class="card-body">
+							Answer a few questions — DeskGo builds your categories, forms, SLAs, and workflows automatically.
+						</p>
+					</div>
+
+					<div class="card">
+						<h3 class="card-title">2. Chat-Style Ticketing</h3>
+						<p class="card-body">
+							Agents resolve tickets faster with a clean, messaging-like interface.
+						</p>
+					</div>
+
+					<div class="card">
+						<h3 class="card-title">3. Smart Automations</h3>
+						<p class="card-body">
+							Pre-made automation templates for:
+						</p>
+						<ul class="list" style="margin-top: 0.4rem;">
+							<li>Password resets</li>
+							<li>Access requests</li>
+							<li>Asset assignment</li>
+							<li>Issue follow-ups</li>
+							<li>Status reminders</li>
+							<li>Closure notifications</li>
+						</ul>
+					</div>
+
+					<div class="card">
+						<h3 class="card-title">4. Employee Self‑Service Portal</h3>
+						<p class="card-body">
+							A clean, simple portal that works for everyone — in English and Arabic.
+						</p>
+					</div>
+
+					<div class="card">
+						<h3 class="card-title">5. Basic Insights Dashboard</h3>
+						<p class="card-body">
+							Track key metrics without drowning in charts.
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="section-muted">
+			<div class="container">
+				<p class="section-heading">Who It’s For</p>
+				<h2 class="section-title">Built for Small Teams — 1 to 5 IT Agents</h2>
+				<p class="section-subtitle">
+					Perfect for teams that need a practical, no‑drama service desk.
+				</p>
+
+				<ul class="list">
+					<li>Small IT departments</li>
+					<li>Startups</li>
+					<li>Clinics</li>
+					<li>Schools</li>
+					<li>Boutiques</li>
+					<li>SME offices</li>
+					<li>Facilities teams</li>
+				</ul>
+			</div>
+		</section>
+
+		<section class="section-alt">
+			<div class="container">
+				<p class="section-heading">How DeskGo Works</p>
+				<h2 class="section-title">Get Started in 3 Simple Steps</h2>
+
+				<div class="steps">
+					<div class="step">
+						<div class="step-number">1</div>
+						<div>
+							<div class="step-content-title">Step 1 — Set Up in 5 Minutes</div>
+							<p class="step-content-text">
+								Answer 6–8 questions about your IT setup.
+							</p>
+						</div>
+					</div>
+
+					<div class="step">
+						<div class="step-number">2</div>
+						<div>
+							<div class="step-content-title">Step 2 — DeskGo Configures Itself</div>
+							<p class="step-content-text">
+								Your categories, forms, and workflows are instantly generated.
+							</p>
+						</div>
+					</div>
+
+					<div class="step">
+						<div class="step-number">3</div>
+						<div>
+							<div class="step-content-title">Step 3 — Start Using the System</div>
+							<p class="step-content-text">
+								Agents start taking tickets. Users start requesting. Everything works.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="section-muted">
+			<div class="container">
+				<p class="section-heading">Pricing Preview</p>
+				<h2 class="section-title">Transparent. Simple. No Nonsense.</h2>
+
+				<ul class="pricing-list">
+					<li><strong>Team Plan (Small IT Teams):</strong> AED <strong>49 / agent / month</strong></li>
+					<li><strong>Company Plan (Unlimited users):</strong> AED <strong>99 / month</strong></li>
+					<li><strong>Add-ons:</strong> Optional</li>
+				</ul>
+				<p class="pricing-note">
+					*Pricing subject to change before launch.*
+				</p>
+			</div>
+		</section>
+
+		<section class="section-alt">
+			<div class="container" id="waitlist-form">
+				<p class="section-heading">Call to Action</p>
+				<h2 class="section-title">Be the first to try DeskGo.</h2>
+				<p class="section-subtitle">
+					Join the early access list and help shape a service desk built for small teams.
+				</p>
+
+				<ul class="list">
+					<li>Lifetime discount</li>
+					<li>Priority support</li>
+					<li>Influence on product roadmap</li>
+					<li>Access before public launch</li>
+				</ul>
+
+				<div style="margin-top: 1.5rem;">
+					<a href="https://docs.google.com/forms/d/e/1FAIpQLSfYNEowWvO2rWzv9-BG0_gda03QCQ0cJ5VD_FeD_Z-DPUnxuw/viewform?usp=dialog" class="btn btn-primary" target="_blank">Join Waitlist</a>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer class="footer">
+		<div class="container footer-inner">
+			<div>DeskGo © 2025</div>
+			<div>Built for small teams who want IT to be simple.</div>
+		</div>
+	</footer>
+</body>
+</html>
