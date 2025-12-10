@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DeskGo Agent Dashboard - Ticket View Mockup</title>
+    <title>DeskGo Agent Dashboard - Ticket View</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="./favicon.png"> 
+    <script src="data.js"></script> 
     <style>
         /* GLOBAL STYLES */
         * {
@@ -34,16 +35,40 @@
             border-radius: 999px;
             font-size: 0.8rem;
             font-weight: 600;
+            text-transform: uppercase;
         }
         .status-open { background-color: #fef3c7; color: #b45309; }
-        .status-urgent { background-color: #fee2e2; color: #dc2626; }
+        /* Reusing priority colors for status/badge consistency */
+        .status-high { background-color: #fee2e2; color: #dc2626; } /* Red for High Priority */
+        .status-medium { background-color: #fef3cc; color: #a37604; } /* Yellow for Medium Priority */
+        .status-low { background-color: #d1fae5; color: #065f46; } /* Green for Low Priority */
+
         .status-automated { background-color: #d1fae5; color: #065f46; }
+
 
         /* LAYOUT */
         .main-layout {
             display: flex;
             flex-grow: 1;
         }
+
+        /* TICKET LOAD ANIMATION KEYFRAMES */
+        @keyframes ticketLoad {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* TICKET LOAD ANIMATION CLASS */
+        .ticket-area.load-animation {
+            animation: ticketLoad 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
 
         /* 1. SIDEBAR NAVIGATION */
         .sidebar {
@@ -60,7 +85,7 @@
             display: block;
         }
         .sidebar-logo img {
-            height: 40px; /* Smaller height suitable for a sidebar */
+            height: 80px; /* INCREASED SIZE FROM 40px TO 50px */
             vertical-align: middle;
         }
         .nav-item {
@@ -92,8 +117,10 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            /* Initial state for animation */
+            opacity: 0;
         }
-        
+
         /* TICKET HEADER (Top Bar) */
         .ticket-header {
             padding: 1rem 2rem;
@@ -137,7 +164,7 @@
             flex-grow: 1;
             overflow: hidden;
         }
-        
+
         /* CHAT THREAD */
         .chat-thread-wrapper {
             flex-grow: 1;
@@ -179,6 +206,14 @@
             max-width: 80%;
             line-height: 1.4;
         }
+        /* RTL SPECIFIC STYLES */
+        .message-content.rtl {
+            direction: rtl;
+            text-align: right;
+            /* Ensures Arabic font is clean if browser defaults are poor */
+            font-family: 'Arial', 'Tahoma', sans-serif; 
+        }
+
         .user-message .message-avatar { background-color: #facc15; }
         .user-message .message-content {
             background-color: #f3f4f6;
@@ -197,7 +232,7 @@
             margin-top: 0.25rem;
         }
         .agent-message .message-info { text-align: right; }
-        
+
         /* Automation Message */
         .automation-message {
             text-align: center;
@@ -301,14 +336,13 @@
     <div class="main-layout">
         <div class="sidebar">
             <a href="index.html" class="sidebar-logo">
-                <img src="./favicon.png" alt="DeskGo Logo" style="height: 80px;">
-            </a>
-            
-            <a href="#" class="nav-item">
-                <span class="nav-icon">📊</span> Dashboard
+                <img src="./logo.png" alt="DeskGo Logo" style="height: 120px;"> </a>
+
+            <a href="tickets.html" class="nav-item">
+                <span class="nav-icon">📊</span> Tickets List
             </a>
             <a href="#" class="nav-item active">
-                <span class="nav-icon">🎫</span> Tickets
+                <span class="nav-icon">🎫</span> Ticket Details
             </a>
             <a href="#" class="nav-item">
                 <span class="nav-icon">⚙️</span> Automations
@@ -321,13 +355,13 @@
             </a>
         </div>
 
-        <div class="ticket-area">
-            
+        <div class="ticket-area load-animation">
+
             <div class="ticket-header">
                 <div class="ticket-title-group">
-                    <span class="status-badge status-open">OPEN</span>
-                    <h1>T-402: Urgent: New laptop for Hana in Marketing</h1>
-                    <span>Opened 2 hours ago by **Hana Almarzooqi** (h.almarz@company.com)</span>
+                    <span id="ticketStatusBadge" class="status-badge status-open">OPEN</span>
+                    <h1 id="ticketTitle">T-000: Loading Ticket Details...</h1>
+                    <span id="ticketInfo">Opened by User (user@company.com)</span>
                 </div>
                 <div class="header-actions">
                     <a href="#" class="btn btn-smart">
@@ -338,39 +372,36 @@
             </div>
 
             <div class="content-split">
-                
+
                 <div class="chat-thread-wrapper">
                     <div class="chat-messages">
 
                         <div class="message user-message">
-                            <div class="message-avatar">HA</div>
+                            <div class="message-avatar">US</div>
                             <div>
-                                <div class="message-content" style="direction: rtl; text-align: right;">
-                                    مرحباً، لابتوبي القديم لا يعمل وأحتاج إلى جهاز جديد بشكل عاجل حتى أتمكن من العمل. شكرا!
-                                    <p style="direction: ltr; text-align: left; font-size: 0.8rem; margin-top: 0.5rem; color: #4b5563;">
-                                        (Translation: Hi, my old laptop is not working, and I urgently need a new one so I can work. Thanks!)
-                                    </p>
+                                <div class="message-content" id="ticketDescriptionContent">
+                                    The initial message content will be loaded here based on the ticket ID.
                                 </div>
-                                <div class="message-info">Hana Almarzooqi · 11:35 AM</div>
+                                <div class="message-info">Ticket Initiator · <span id="initialMessageTime">11:30 AM</span></div>
                             </div>
                         </div>
 
-                        <div class="automation-message">
-                            <span>✅ Automation: Priority set to URGENT based on keywords 'عاجل' and 'urgently'.</span>
+                        <div id="automationTrigger" class="automation-message" style="display: none;">
+                            <span>✅ Automation: Priority set to **[PRIORITY]** based on content analysis.</span>
                         </div>
 
                         <div class="message agent-message">
                             <div>
-                                <div class="message-content">
-                                    Thanks for reaching out, Hana. I see the urgency! I've already initiated the hardware request process and assigned it to the procurement team. I will follow up when the new device is ready.
+                                <div class="message-content" id="agentMessageContent">
+                                    Thanks for reaching out! I've confirmed your issue and am starting the process now. I will follow up with an update in the next hour.
                                 </div>
-                                <div class="message-info">You (Agent) · 11:45 AM</div>
+                                <div class="message-info" id="agentMessageInfo">You (Agent) · 11:45 AM</div>
                             </div>
                             <div class="message-avatar">IT</div>
                         </div>
 
                     </div>
-                    
+
                     <div class="reply-box">
                         <textarea placeholder="Type your reply here... (Supports English and Arabic)"></textarea>
                         <div class="reply-actions">
@@ -384,11 +415,11 @@
                         <div class="panel-title">Ticket Details</div>
                         <div class="property">
                             <span class="property-label">Priority</span>
-                            <span class="property-value">High</span>
+                            <span id="propertyPriority" class="property-value">Loading...</span>
                         </div>
                         <div class="property">
                             <span class="property-label">Category</span>
-                            <span class="property-value">Hardware Request</span>
+                            <span id="propertyCategory" class="property-value">Loading...</span>
                         </div>
                         <div class="property">
                             <span class="property-label">Assignee</span>
@@ -402,27 +433,95 @@
 
                     <div class="panel-group">
                         <div class="panel-title">Automation & Activity Log</div>
-                        
-                        <div class="log-entry">
-                            **System Automation** triggered: Priority changed to **High**.
-                            <span class="log-entry-time">11:35 AM</span>
-                        </div>
-                        <div class="log-entry">
-                            **System Automation** executed: Created Procurement Task for Hana.
-                            <span class="log-entry-time">11:45 AM</span>
-                        </div>
-                        <div class="log-entry manual">
-                            **You (Karim)** assigned ticket to Procurement Team.
-                            <span class="log-entry-time">11:46 AM</span>
-                        </div>
+
                         <div class="log-entry">
                             **System Automation** executed: Sent auto-reply confirming receipt.
                             <span class="log-entry-time">11:35 AM</span>
+                        </div>
+                        <div class="log-entry" id="logPriority">
+                            **System Automation** triggered: Priority set to **High**.
+                            <span class="log-entry-time">11:35 AM</span>
+                        </div>
+                        <div class="log-entry manual">
+                            **You (Karim)** replied to the user.
+                            <span class="log-entry-time">11:46 AM</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Function to check if content contains Arabic characters (for RTL support)
+            function containsArabic(text) {
+                // Unicode range for most common Arabic characters
+                return /[\u0600-\u06FF]/.test(text);
+            }
+
+            // 1. Get the ticket ID from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const ticketId = parseInt(urlParams.get('id')) || 1; 
+
+            // 2. Find the matching ticket in the globally available 'tickets' array (from data.js)
+            const ticket = tickets.find(t => t.id === ticketId);
+
+            if (ticket) {
+                const priorityClass = `status-${ticket.priority}`;
+                const descriptionElement = document.getElementById('ticketDescriptionContent');
+                const agentContentElement = document.getElementById('agentMessageContent');
+                const agentInfoElement = document.getElementById('agentMessageInfo');
+
+                // --- RTL LOGIC (User Message) ---
+                const isArabicTicket = containsArabic(ticket.description);
+
+                if (isArabicTicket) {
+                    descriptionElement.classList.add('rtl');
+
+                    // --- RTL LOGIC (Agent Response) ---
+                    const arabicResponse = "شكراً لتواصلك! لقد أكدت مشكلتك وأنا أبدأ العملية الآن. سأتابع معك بتحديث خلال الساعة القادمة.";
+
+                    // Update agent response content to Arabic
+                    agentContentElement.textContent = arabicResponse;
+                    // Apply RTL to agent response bubble
+                    agentContentElement.classList.add('rtl'); 
+
+                    // Update agent info text
+                    agentInfoElement.textContent = "You (Agent) · 11:45 AM";
+                }
+
+                // --- Inject Dynamic Content ---
+
+                // HEADER
+                document.getElementById('ticketStatusBadge').textContent = ticket.status.toUpperCase();
+                document.getElementById('ticketStatusBadge').className = `status-badge ${priorityClass}`;
+                document.getElementById('ticketTitle').textContent = `T-${ticket.id}: ${ticket.title}`;
+                document.getElementById('ticketInfo').textContent = `Opened by User in **${ticket.category}**`;
+
+                // CHAT THREAD (Initial Message)
+                descriptionElement.textContent = ticket.description;
+
+                // AUTOMATION LOGIC
+                const automationElement = document.getElementById('automationTrigger');
+                const logPriorityElement = document.getElementById('logPriority');
+
+                // Update the automation message content and display it
+                automationElement.style.display = 'block';
+                automationElement.innerHTML = `<span>✅ Automation: Priority set to **${ticket.priority.toUpperCase()}** based on content analysis.</span>`;
+
+                // Update the priority log entry
+                logPriorityElement.innerHTML = `**System Automation** triggered: Priority set to **${ticket.priority.toUpperCase()}**.
+                    <span class="log-entry-time">11:35 AM</span>`;
+
+                // PROPERTIES PANEL
+                document.getElementById('propertyPriority').textContent = ticket.priority.toUpperCase();
+                document.getElementById('propertyCategory').textContent = ticket.category;
+            } else {
+                // Fallback for an invalid ticket ID
+                document.getElementById('ticketTitle').textContent = 'Error: Ticket Not Found';
+            }
+        });
+    </script>
 </body>
 </html>

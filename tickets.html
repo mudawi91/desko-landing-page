@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tickets List - DeskGo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="./favicon.png">
+    <script src="data.js"></script>
+    <style>
+        /* CSS unique to the Ticket List page to handle the layout */
+        body {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #f3f4f6;
+        }
+
+        /* 1. SIDEBAR (Copied from dashboard.html for consistency) */
+        .sidebar {
+            width: 250px;
+            background-color: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            padding: 1.5rem 1rem;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            margin-bottom: 2rem;
+            display: block;
+        }
+
+        .sidebar-logo img {
+            height: 65px;
+            /* Final Logo Size */
+            vertical-align: middle;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            color: #4b5563;
+            transition: background-color 0.15s;
+        }
+
+        .nav-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .nav-item.active {
+            background-color: #e0f2fe;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        /* --- Animation Keyframes for Main Content Entrance --- */
+        @keyframes fadeInSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --------------------------------------------------- */
+
+        /* 2. MAIN CONTENT AREA */
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            /* Allows scrolling of the ticket list */
+            padding: 2rem;
+
+            /* ADDED ANIMATION STYLES */
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInSlide 0.6s ease-out forwards;
+            /* Apply the animation */
+            animation-delay: 0.1s;
+            /* Slight delay after page load for polish */
+        }
+
+        .main-content h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: #111827;
+        }
+
+        /* Ensure the tickets container is centered within the main content */
+        .container {
+            width: 100%;
+            max-width: 900px;
+            /* Keeps tickets readable */
+            margin: 0;
+            /* Remove old auto margins */
+            padding: 0;
+        }
+
+        /* ============== MOBILE RESPONSIVENESS FIX ============== */
+        @media (max-width: 768px) {
+
+            /* 1. Hide the sidebar to free up space */
+            .sidebar {
+                display: none;
+            }
+
+            /* 2. Main content takes full screen and reduces padding */
+            .main-content {
+                padding: 1rem;
+            }
+        }
+
+        /* ======================================================= */
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <a href="index.html" class="sidebar-logo">
+            <img src="./logo.png" alt="DeskGo Logo" style="height: 65px;">
+        </a>
+
+        <a href="#" class="nav-item">
+            <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="#" class="nav-item active">
+            <span class="nav-icon">🎫</span> Tickets
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-icon">⚙️</span> Automations
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-icon">👤</span> Users & Teams
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-icon">🛠️</span> Settings
+        </a>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <h2>Your Active Tickets</h2>
+
+            <div class="ai-box">
+                <strong>✨ AI Insight:</strong> Your high-priority tickets related to Email and Network issues have an
+                average response time of 3 hours. Suggest using the **'Urgent Email Triage'** automation template to
+                speed up initial classification.
+            </div>
+
+            <div id="ticketList">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const container = document.getElementById("ticketList");
+
+        // Assuming 'tickets' array is defined in data.js
+        tickets.forEach(ticket => {
+            const div = document.createElement("div");
+            div.className = "ticket";
+            // Clicking a ticket will simulate navigating to the details page
+            div.onclick = () => window.location.href = `dashboard.html?id=${ticket.id}`;
+
+            div.innerHTML = `
+                <div class="ticket-title">${ticket.title}</div>
+                <div>Category: ${ticket.category}</div>
+                <div>Status: ${ticket.status}</div>
+                <span class="badge ${ticket.priority}">
+                    Priority: ${ticket.priority.toUpperCase()}
+                </span>
+            `;
+
+            container.appendChild(div);
+        });
+    </script>
+</body>
+
+</html>

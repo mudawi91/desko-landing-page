@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ticket Details</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="data.js"></script>
+</head>
+
+<body>
+  <header>Desko — Ticket Details</header>
+
+  <div class="container">
+    <div id="ticketBox"></div>
+
+    <div class="ai-box">
+      <strong>AI Suggestion:</strong><br>
+      <span id="aiSuggestion">Analyzing ticket...</span>
+    </div>
+
+    <button onclick="window.location.href='tickets.html'">
+      ← Back to Tickets
+    </button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = parseInt(params.get("id"));
+
+    const ticket = tickets.find(t => t.id === id);
+
+    const box = document.getElementById("ticketBox");
+
+    box.innerHTML = `
+      <h2>${ticket.title}</h2>
+      <p>${ticket.description}</p>
+      <p><strong>Category:</strong> ${ticket.category}</p>
+      <p><strong>Status:</strong> ${ticket.status}</p>
+      <p><strong>Priority:</strong> ${ticket.priority}</p>
+    `;
+
+    // Fake AI logic
+    const aiText = document.getElementById("aiSuggestion");
+
+    setTimeout(() => {
+      aiText.textContent = 
+        ticket.priority === "high"
+        ? "High priority ticket detected — Recommend routing to Senior Support."
+        : ticket.priority === "medium"
+          ? "Medium priority — Suggest assigning to Network Specialist."
+          : "Low priority — Best handled by general IT support.";
+    }, 1000);
+  </script>
+</body>
+</html>

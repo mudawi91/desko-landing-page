@@ -28,13 +28,23 @@
             text-align: center;
             padding: 2rem;
             max-width: 600px;
-            /* Motion: Initial state is scaled down and slightly transparent */
-            opacity: 0;
-            transform: scale(0.9) translateY(20px);
-            animation: fadeInScale 1s ease-out forwards;
+            z-index: 10; 
+
+            /* ANIMATION APPLIED HERE */
+            opacity: 0; 
+            transform: scale(0.95) translateY(10px); 
+            animation: fadeInScale 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
         }
 
-        /* Animation Keyframes for smooth entrance */
+        /* Logo Styling */
+        .logo {
+            margin-bottom: 1.5rem;
+        }
+        .logo img {
+            height: 140px; /* INCREASED SIZE TO 65px */
+        }
+
+        /* --- Animation Keyframes --- */
         @keyframes fadeInScale {
             to {
                 opacity: 1;
@@ -44,42 +54,37 @@
 
         /* Title styling with bold font */
         .title {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 800;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
             margin-bottom: 0.5rem;
-            color: #ffffff;
-            letter-spacing: -0.05em;
+            font-weight: 800;
         }
 
-        /* Subtitle styling */
         .subtitle {
-            font-size: clamp(1.1rem, 2vw, 1.5rem);
+            font-size: 1.1rem;
             color: #d1d5db;
             margin-bottom: 2rem;
-            font-weight: 400;
         }
 
-        /* Badge/Status styling */
         .badge {
             display: inline-block;
-            padding: 0.5rem 1.5rem;
+            background-color: #374151;
+            color: #9ca3af;
+            padding: 0.25rem 0.75rem;
             border-radius: 999px;
-            background: #2563eb;
-            color: white;
+            font-size: 0.8rem;
             font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-            /* Subtle breathing animation */
-            animation: pulseFade 2s infinite ease-in-out;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
         }
 
-        @keyframes pulseFade {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235, 0.5); }
-            50% { box-shadow: 0 0 0 10px rgba(37,99,235, 0); }
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
         }
 
-        /* Back to Home Button (Primary Style) */
-        .btn-home {
+        .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -94,37 +99,12 @@
             text-decoration: none;
             transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
         }
-        .btn-home:hover {
+        .btn:hover {
             background: #2563eb;
             color: white;
             border-color: #2563eb;
             transform: translateY(-2px);
         }
-        
-        /* Waitlist Button (Secondary Style) */
-        .btn-waitlist {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem 2rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            border: none;
-            color: white;
-            background: #2563eb;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background-color 0.2s ease, transform 0.2s ease;
-            box-shadow: 0 5px 15px -3px rgba(37,99,235,0.4);
-            margin-right: 1rem;
-        }
-        .btn-waitlist:hover {
-            background: #1d4ed8;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(37,99,235,0.6);
-        }
-
 
         /* Optional: Background gradient and noise for rich UI */
         .background-effect {
@@ -141,20 +121,20 @@
 <body>
     <div class="background-effect"></div>
     <div class="coming-soon-container">
+
+        <div class="logo">
+            <img src="./logo.png" alt="DeskGo Logo">
+        </div>
+
         <div class="badge">In Active Development</div>
         <h1 class="title">Login is Coming Soon</h1>
         <p class="subtitle">
-            We are finalizing the security and performance systems to ensure the best possible experience. Join the waitlist below to get early access.
+            We are finalizing the security features to ensure maximum protection for DeskGo users.
         </p>
-        
-        <div style="margin-top: 2rem;">
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfYNEowWvO2rWzv9-BG0_gda03QCQ0cJ5VD_FeD_Z-DPUnxuw/viewform?usp=dialog" class="btn-waitlist" target="_blank">
-                Join Waitlist
-            </a>
-            
-            <a href="index.html" class="btn-home">
-                Back to Homepage
-            </a>
+
+        <div class="btn-group">
+            <a href="index.html" class="btn">Return Home</a>
+            <a href="tickets.html" class="btn">Go to Demo Dashboard</a>
         </div>
     </div>
 </body>
