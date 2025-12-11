@@ -1,192 +1,564 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Tickets List - DeskGo</title>
+    <meta charset="UTF-8">
+    <title>Tickets - DeskGo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="./favicon.png">
-    <script src="data.js"></script>
     <style>
-        /* CSS unique to the Ticket List page to handle the layout */
-        body {
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            background-color: #f3f4f6;
+        /* PHASE 1: THEME COLORS (CSS Variables) */
+        :root {
+            --color-bg-primary: #f3f4f6;
+            --color-bg-secondary: #ffffff;
+            --color-text-primary: #111827;
+            --color-text-secondary: #4b5563;
+            --color-border: #e5e7eb;
+            --color-accent-bg: #e0f2fe;
+            --color-accent: #2563eb;
+            --color-shadow: rgba(0, 0, 0, 0.05);
+            --color-sidebar-bg: #ffffff;
         }
 
-        /* 1. SIDEBAR (Copied from dashboard.html for consistency) */
+        [data-theme='dark'] {
+            --color-bg-primary: #111827;
+            --color-bg-secondary: #1f2937;
+            --color-text-primary: #f9fafb;
+            --color-text-secondary: #d1d5db;
+            --color-border: #374151;
+            --color-accent-bg: #1e3a8a;
+            --color-accent: #60a5fa;
+            --color-shadow: rgba(0, 0, 0, 0.05);
+            --color-sidebar-bg: #1f2937;
+        }
+
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Layout */
         .sidebar {
             width: 250px;
-            background-color: #ffffff;
-            border-right: 1px solid #e5e7eb;
-            padding: 1.5rem 1rem;
+            background-color: var(--color-sidebar-bg);
+            border-right: 1px solid var(--color-border);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            /* CRITICAL */
             flex-shrink: 0;
-            overflow-y: auto;
+            transition: background-color 0.3s;
         }
 
-        .sidebar-logo {
-            margin-bottom: 2rem;
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Sidebar Elements */
+        .logo a {
             display: block;
+            margin-bottom: 2rem;
         }
 
-        .sidebar-logo img {
-            height: 65px;
-            /* Final Logo Size */
-            vertical-align: middle;
+        .logo img {
+            height: 120px;
         }
 
-        .nav-item {
+        /* New Nav Group for separation */
+        .nav-group {
+            /* This div wraps the nav links, keeping them separate from the button */
+        }
+
+        .nav-link {
             display: flex;
             align-items: center;
             padding: 0.75rem 1rem;
             margin-bottom: 0.5rem;
             border-radius: 0.5rem;
-            font-size: 0.95rem;
-            color: #4b5563;
-            transition: background-color 0.15s;
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            transition: background-color 0.2s, color 0.2s;
+            font-weight: 500;
         }
 
-        .nav-item:hover {
-            background-color: #f3f4f6;
+        .nav-link.active,
+        .nav-link:hover {
+            background-color: var(--color-accent-bg);
+            color: var(--color-accent);
         }
 
-        .nav-item.active {
-            background-color: #e0f2fe;
-            color: #2563eb;
+        .nav-link svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.75rem;
+        }
+
+        /* Style for the button at the bottom of the sidebar */
+        .sidebar .btn-primary {
+            margin-top: auto;
+            /* Pushes the button to the bottom */
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            background-color: var(--color-accent);
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar .btn-primary:hover {
+            background-color: #1e40af;
+            /* Darker blue */
+        }
+
+        /* Main Content Header */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .main-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            fill: var(--color-text-secondary);
+            transition: fill 0.2s;
+        }
+
+        .theme-toggle:hover {
+            fill: var(--color-text-primary);
+        }
+
+        /* Controls: Filter and Sort */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--color-bg-secondary);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px var(--color-shadow);
+        }
+
+        .filter-group,
+        .sort-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        select {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--color-border);
+            border-radius: 0.5rem;
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* Ticket List */
+        .ticket-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .ticket-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--color-bg-secondary);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 1px 3px var(--color-shadow);
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .ticket-item:hover {
+            background-color: var(--color-accent-bg);
+            transform: translateY(-2px);
+        }
+
+        .ticket-info {
+            flex: 3;
+            min-width: 0;
+            /* Ensures content inside can shrink */
+        }
+
+        .ticket-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ticket-meta {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+            margin-top: 0.2rem;
+        }
+
+        .dot-separator {
+            padding: 0 0.5rem;
+        }
+
+        .ticket-status-col,
+        .ticket-category-col {
+            flex: 1;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .ticket-date-col {
+            flex: 1;
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+        }
+
+        /* Utility Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
             font-weight: 600;
         }
 
-        .nav-icon {
-            margin-right: 0.75rem;
-            font-size: 1.1rem;
+        /* Status Colors */
+        .bg-red-100 {
+            background-color: #fee2e2;
         }
 
-        /* --- Animation Keyframes for Main Content Entrance --- */
-        @keyframes fadeInSlide {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .text-red-800 {
+            color: #991b1b;
         }
 
-        /* --------------------------------------------------- */
-
-        /* 2. MAIN CONTENT AREA */
-        .main-content {
-            flex-grow: 1;
-            overflow-y: auto;
-            /* Allows scrolling of the ticket list */
-            padding: 2rem;
-
-            /* ADDED ANIMATION STYLES */
-            opacity: 0;
-            transform: translateY(10px);
-            animation: fadeInSlide 0.6s ease-out forwards;
-            /* Apply the animation */
-            animation-delay: 0.1s;
-            /* Slight delay after page load for polish */
+        .bg-blue-100 {
+            background-color: #dbeafe;
         }
 
-        .main-content h2 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            color: #111827;
+        .text-blue-800 {
+            color: #1e40af;
         }
 
-        /* Ensure the tickets container is centered within the main content */
-        .container {
-            width: 100%;
-            max-width: 900px;
-            /* Keeps tickets readable */
-            margin: 0;
-            /* Remove old auto margins */
-            padding: 0;
+        .bg-gray-200 {
+            background-color: #e5e7eb;
         }
 
-        /* ============== MOBILE RESPONSIVENESS FIX ============== */
-        @media (max-width: 768px) {
-
-            /* 1. Hide the sidebar to free up space */
-            .sidebar {
-                display: none;
-            }
-
-            /* 2. Main content takes full screen and reduces padding */
-            .main-content {
-                padding: 1rem;
-            }
+        .bg-gray-300 {
+            background-color: #d1d5db;
         }
 
-        /* ======================================================= */
+        .text-gray-800 {
+            color: #1f2937;
+        }
+
+        .bg-green-100 {
+            background-color: #d1fae5;
+        }
+
+        .text-green-800 {
+            color: #065f46;
+        }
+
+        /* Dark Mode Adjustments for Badges */
+        [data-theme='dark'] .bg-red-100 {
+            background-color: #450a0a;
+        }
+
+        [data-theme='dark'] .text-red-800 {
+            color: #fecaca;
+        }
+
+        [data-theme='dark'] .bg-blue-100 {
+            background-color: #1e3a8a;
+        }
+
+        [data-theme='dark'] .text-blue-800 {
+            color: #93c5fd;
+        }
+
+        [data-theme='dark'] .bg-gray-200,
+        [data-theme='dark'] .bg-gray-300 {
+            background-color: #374151;
+        }
+
+        [data-theme='dark'] .text-gray-800 {
+            color: #e5e7eb;
+        }
+
+        [data-theme='dark'] .bg-green-100 {
+            background-color: #064e3b;
+        }
+
+        [data-theme='dark'] .text-green-800 {
+            color: #a7f3d0;
+        }
     </style>
 </head>
 
 <body>
     <div class="sidebar">
-        <a href="index.html" class="sidebar-logo">
-            <img src="./logo.png" alt="DeskGo Logo" style="height: 65px;">
-        </a>
+        <div class="logo">
+            <a href="index.html">
+                <img src="./logo.png" alt="DeskGo Logo">
+            </a>
+        </div>
 
-        <a href="#" class="nav-item">
-            <span class="nav-icon">📊</span> Dashboard
-        </a>
-        <a href="#" class="nav-item active">
-            <span class="nav-icon">🎫</span> Tickets
-        </a>
-        <a href="#" class="nav-item">
-            <span class="nav-icon">⚙️</span> Automations
-        </a>
-        <a href="#" class="nav-item">
-            <span class="nav-icon">👤</span> Users & Teams
-        </a>
-        <a href="#" class="nav-item">
-            <span class="nav-icon">🛠️</span> Settings
+        <div class="nav-group">
+            <a href="tickets.html" class="nav-link active">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M19.5 3a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 3v18a2.25 2.25 0 002.25 2.25h10.5A2.25 2.25 0 0019.5 21V3zM16.5 6a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 3a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 3a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 3a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 3a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6 6.75A.75.75 0 016.75 6h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 6.75zM6 9.75A.75.75 0 016.75 9h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 9.75zM6 12.75A.75.75 0 016.75 12h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 12.75zM6 15.75A.75.75 0 016.75 15h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 15.75zM6 18.75A.75.75 0 016.75 18h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 18.75z" />
+                </svg>
+                Tickets
+            </a>
+
+            <a href="dashboard.html" class="nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 01.75.75v1.5a.75.75 0 01-.75.75H3.75A.75.75 0 013 8.25v-1.5zM3 13.5A.75.75 0 013.75 13h16.5a.75.75 0 01.75.75v1.5a.75.75 0 01-.75.75H3.75a.75.75 0 01-.75-.75v-1.5zM3 20.25A.75.75 0 013.75 19h16.5a.75.75 0 01.75.75v1.5a.75.75 0 01-.75.75H3.75a.75.75 0 01-.75-.75v-1.5z"
+                        clip-rule="evenodd" />
+                </svg>
+                Dashboard (Charts)
+            </a>
+
+            <a href="login.html" class="nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M7.5 3.75A.75.75 0 008.25 3h7.5a.75.75 0 000 1.5h-7.5a.75.75 0 00-.75-.75zM11.75 9A.75.75 0 0011 9.75v1.5a.75.75 0 001.5 0v-1.5a.75.75 0 00-.75-.75zM12 5.25a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0V6a.75.75 0 01.75-.75zM7.5 13.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM12 16.5a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM3.75 12a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM18.75 12a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75z"
+                        clip-rule="evenodd" />
+                </svg>
+                Logout
+            </a>
+        </div>
+
+        <a href="new-ticket.html" class="btn btn-primary">
+            Submit New Ticket
         </a>
     </div>
-
     <div class="main-content">
-        <div class="container">
-            <h2>Your Active Tickets</h2>
-
-            <div class="ai-box">
-                <strong>✨ AI Insight:</strong> Your high-priority tickets related to Email and Network issues have an
-                average response time of 3 hours. Suggest using the **'Urgent Email Triage'** automation template to
-                speed up initial classification.
+        <header class="main-header">
+            <h1>Ticket Management View</h1>
+            <div class="header-actions">
+                <svg id="themeToggle" class="theme-toggle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    fill="currentColor">
+                    <path
+                        d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.258 17.242a.75.75 0 01-.53-.22L4.515 15.0a.75.75 0 011.06-1.06l2.213 2.212a.75.75 0 01-.53 1.28zM16.742 17.242a.75.75 0 01-.53-1.28l2.213-2.212a.75.75 0 011.06 1.06l-2.213 2.212a.75.75 0 01-.53.22zM12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9zM4.755 12a.75.75 0 01-.75-.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zm17.49 0a.75.75 0 01-.75-.75h-2.25a.75.75 0 010 1.5h2.25a.75.75 0 01.75-.75zM7.258 6.758a.75.75 0 01.53-.22l2.213 2.212a.75.75 0 01-1.06 1.06L6.228 7.59a.75.75 0 01.53-.83zM16.742 6.758a.75.75 0 01.53.83l-2.213 2.212a.75.75 0 01-1.06-1.06l2.213-2.212a.75.75 0 01.53-.22z" />
+                </svg>
             </div>
+        </header>
 
-            <div id="ticketList">
+        <div class="controls">
+            <div class="filter-group">
+                <label for="statusFilter">Filter Status:</label>
+                <select id="statusFilter" onchange="filterTickets()">
+                    <option value="all">All Statuses</option>
+                    <option value="open">Open</option>
+                    <option value="processing">Processing</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="closed">Closed</option>
+                </select>
+                <label for="priorityFilter">Filter Priority:</label>
+                <select id="priorityFilter" onchange="filterTickets()">
+                    <option value="all">All Priorities</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            <div class="sort-group">
+                <label for="sortOrder">Sort By:</label>
+                <select id="sortOrder" onchange="sortTickets()">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="priority-desc">Priority (High to Low)</option>
+                </select>
             </div>
         </div>
+
+        <div class="ticket-header ticket-item">
+            <div class="ticket-info">Ticket Details</div>
+            <div class="ticket-status-col">Status</div>
+            <div class="ticket-category-col">Category</div>
+            <div class="ticket-date-col">Date</div>
+        </div>
+
+        <ul id="ticketList" class="ticket-list">
+        </ul>
     </div>
 
+    <script src="./data.js"></script>
     <script>
-        const container = document.getElementById("ticketList");
+        let currentTickets = [];
 
-        // Assuming 'tickets' array is defined in data.js
-        tickets.forEach(ticket => {
-            const div = document.createElement("div");
-            div.className = "ticket";
-            // Clicking a ticket will simulate navigating to the details page
-            div.onclick = () => window.location.href = `dashboard.html?id=${ticket.id}`;
+        // Utility function to format timestamp
+        function formatTimestamp(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        }
 
-            div.innerHTML = `
-                <div class="ticket-title">${ticket.title}</div>
-                <div>Category: ${ticket.category}</div>
-                <div>Status: ${ticket.status}</div>
-                <span class="badge ${ticket.priority}">
-                    Priority: ${ticket.priority.toUpperCase()}
-                </span>
-            `;
+        // Function to generate the status badge HTML
+        function getTicketStatusHtml(status) {
+            let color = 'gray';
+            let bgColor = 'bg-gray-200';
+            let text = status.toUpperCase();
 
-            container.appendChild(div);
+            if (status === 'open') {
+                color = 'red';
+                bgColor = 'bg-red-100';
+            } else if (status === 'processing') {
+                color = 'blue';
+                bgColor = 'bg-blue-100';
+            } else if (status === 'resolved') {
+                color = 'green';
+                bgColor = 'bg-green-100';
+            } else if (status === 'closed') {
+                color = 'gray';
+                bgColor = 'bg-gray-300';
+            }
+
+            return `<span class="badge ${bgColor} text-${color}-800">${text}</span>`;
+        }
+
+        // Function to render tickets on the page
+        function renderTickets(ticketList) {
+            const list = document.getElementById('ticketList');
+            list.innerHTML = '';
+
+            ticketList.forEach(ticket => {
+                const li = document.createElement('li');
+                li.className = 'ticket-item';
+
+                // CLICK HANDLER: Sends user to dashboard.html with the ticket's ID
+                li.onclick = () => {
+                    window.location.href = `dashboard.html?id=${ticket.id}`;
+                };
+
+                li.innerHTML = `
+                    <div class="ticket-info">
+                        <div class="ticket-title">${ticket.title}</div>
+                        <div class="ticket-meta">
+                            <span>#${ticket.id}</span>
+                            <span class="dot-separator">·</span>
+                            <span>${ticket.name} (${ticket.email})</span>
+                        </div>
+                    </div>
+                    <div class="ticket-status-col">
+                        ${getTicketStatusHtml(ticket.status)}
+                    </div>
+                    <div class="ticket-category-col">
+                        ${ticket.category}
+                    </div>
+                    <div class="ticket-date-col">
+                        ${formatTimestamp(ticket.timestamp)}
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+
+        // --- FILTERING LOGIC ---
+        function filterTickets() {
+            const status = document.getElementById('statusFilter').value;
+            const priority = document.getElementById('priorityFilter').value;
+
+            // Start with the base list from the loaded data.js (window.tickets)
+            let filteredList = window.tickets;
+
+            if (status !== 'all') {
+                filteredList = filteredList.filter(ticket => ticket.status === status);
+            }
+
+            if (priority !== 'all') {
+                filteredList = filteredList.filter(ticket => ticket.priority === priority);
+            }
+
+            currentTickets = filteredList; // Update the list for sorting
+            sortTickets(false); // Re-sort and render the filtered list
+        }
+
+        // --- SORTING LOGIC ---
+        function sortTickets(applyFilters = true) {
+            if (applyFilters) {
+                // Ensures we are sorting the list that matches the current filter settings
+                filterTickets();
+                return; // filterTickets will call sortTickets(false) internally
+            }
+
+            const sortOrder = document.getElementById('sortOrder').value;
+            let sortedList = [...currentTickets]; // Copy the current list
+
+            sortedList.sort((a, b) => {
+                if (sortOrder === 'newest') {
+                    return new Date(b.timestamp) - new Date(a.timestamp);
+                } else if (sortOrder === 'oldest') {
+                    return new Date(a.timestamp) - new Date(b.timestamp);
+                } else if (sortOrder === 'priority-desc') {
+                    const priorityMap = {'high': 3, 'medium': 2, 'low': 1};
+                    return priorityMap[b.priority] - priorityMap[a.priority];
+                }
+                return 0;
+            });
+
+            renderTickets(sortedList);
+        }
+
+        // --- THEME LOGIC ---
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Load Theme
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+            // 2. Initial Render
+            currentTickets = window.tickets;
+            sortTickets(false); // Initial sort (newest first)
+
+            // Note: filterTickets will call sortTickets internally when filters change.
         });
     </script>
 </body>

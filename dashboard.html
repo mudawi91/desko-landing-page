@@ -1,527 +1,672 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>DeskGo Agent Dashboard - Ticket View</title>
+    <title>Ticket Detail - DeskGo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="./favicon.png"> 
-    <script src="data.js"></script> 
+    <link rel="icon" type="image/png" href="./favicon.png">
     <style>
-        /* GLOBAL STYLES */
+        /* PHASE 1: THEME COLORS (CSS Variables) */
+        :root {
+            --color-bg-primary: #f3f4f6;
+            --color-bg-secondary: #ffffff;
+            --color-text-primary: #111827;
+            --color-text-secondary: #4b5563;
+            --color-border: #e5e7eb;
+            --color-accent-bg: #e0f2fe;
+            --color-accent: #2563eb;
+            --color-shadow: rgba(0, 0, 0, 0.05);
+            --color-sidebar-bg: #ffffff;
+        }
+
+        [data-theme='dark'] {
+            --color-bg-primary: #111827;
+            --color-bg-secondary: #1f2937;
+            --color-text-primary: #f9fafb;
+            --color-text-secondary: #d1d5db;
+            --color-border: #374151;
+            --color-accent-bg: #1e3a8a;
+            --color-accent: #60a5fa;
+            --color-shadow: rgba(0, 0, 0, 0.05);
+            --color-sidebar-bg: #1f2937;
+        }
+
+        /* Global Styles */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background-color: #f3f4f6; /* Light gray background for app feel */
-            color: #111827;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
             display: flex;
-            height: 100vh;
-            overflow: hidden; /* Prevent body scroll */
-        }
-        a {
-            text-decoration: none;
-            color: inherit;
+            min-height: 100vh;
         }
 
-        /* UTILITY CLASSES */
-        .deskgo-blue { color: #2563eb; }
-        .bg-deskgo-blue { background-color: #2563eb; }
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 999px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        .status-open { background-color: #fef3c7; color: #b45309; }
-        /* Reusing priority colors for status/badge consistency */
-        .status-high { background-color: #fee2e2; color: #dc2626; } /* Red for High Priority */
-        .status-medium { background-color: #fef3cc; color: #a37604; } /* Yellow for Medium Priority */
-        .status-low { background-color: #d1fae5; color: #065f46; } /* Green for Low Priority */
-
-        .status-automated { background-color: #d1fae5; color: #065f46; }
-
-
-        /* LAYOUT */
-        .main-layout {
-            display: flex;
-            flex-grow: 1;
-        }
-
-        /* TICKET LOAD ANIMATION KEYFRAMES */
-        @keyframes ticketLoad {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* TICKET LOAD ANIMATION CLASS */
-        .ticket-area.load-animation {
-            animation: ticketLoad 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
-
-
-        /* 1. SIDEBAR NAVIGATION */
+        /* Layout */
         .sidebar {
             width: 250px;
-            background-color: #ffffff;
-            border-right: 1px solid #e5e7eb;
-            padding: 1.5rem 1rem;
+            background-color: var(--color-sidebar-bg);
+            border-right: 1px solid var(--color-border);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
             flex-shrink: 0;
-            overflow-y: auto;
         }
-        /* LOGO STYLED FOR IMAGE */
-        .sidebar-logo {
-            margin-bottom: 2rem;
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Sidebar Elements */
+        .logo a {
             display: block;
+            margin-bottom: 2rem;
         }
-        .sidebar-logo img {
-            height: 80px; /* INCREASED SIZE FROM 40px TO 50px */
-            vertical-align: middle;
+
+        .logo img {
+            height: 120px;
         }
-        .nav-item {
+
+        .nav-link {
             display: flex;
             align-items: center;
             padding: 0.75rem 1rem;
             margin-bottom: 0.5rem;
             border-radius: 0.5rem;
-            font-size: 0.95rem;
-            color: #4b5563;
-            transition: background-color 0.15s;
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            transition: background-color 0.2s, color 0.2s;
+            font-weight: 500;
         }
-        .nav-item:hover {
-            background-color: #f3f4f6;
+
+        .nav-link.active,
+        .nav-link:hover {
+            background-color: var(--color-accent-bg);
+            color: var(--color-accent);
         }
-        .nav-item.active {
-            background-color: #e0f2fe;
-            color: #2563eb;
-            font-weight: 600;
-        }
-        .nav-icon {
+
+        .nav-link svg {
+            width: 20px;
+            height: 20px;
             margin-right: 0.75rem;
-            font-size: 1.1rem; 
         }
 
-        /* 2. TICKET VIEW AREA */
-        .ticket-area {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            /* Initial state for animation */
-            opacity: 0;
+        .sidebar .btn-primary {
+            margin-top: auto;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            background-color: var(--color-accent);
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.2s;
         }
 
-        /* TICKET HEADER (Top Bar) */
+        .sidebar .btn-primary:hover {
+            background-color: #1e40af;
+        }
+
+        /* Ticket Header */
         .ticket-header {
-            padding: 1rem 2rem;
-            background-color: white;
-            border-bottom: 1px solid #e5e7eb;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            flex-shrink: 0;
+            align-items: center;
+            background-color: var(--color-bg-secondary);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px var(--color-shadow);
         }
-        .ticket-title-group h1 {
-            font-size: 1.4rem;
+
+        .ticket-header-left h1 {
+            font-size: 1.8rem;
             font-weight: 700;
             margin-bottom: 0.25rem;
         }
-        .ticket-title-group span {
-            font-size: 0.85rem;
-            color: #6b7280;
+
+        .ticket-meta {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
         }
-        .header-actions .btn {
-            display: inline-flex;
-            align-items: center;
+
+        .dot-separator {
+            padding: 0 0.5rem;
+        }
+
+        /* Status Badge */
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .bg-red-100 {
+            background-color: #fee2e2;
+        }
+
+        .text-red-800 {
+            color: #991b1b;
+        }
+
+        .bg-blue-100 {
+            background-color: #dbeafe;
+        }
+
+        .text-blue-800 {
+            color: #1e40af;
+        }
+
+        .bg-gray-200 {
+            background-color: #e5e7eb;
+        }
+
+        .bg-gray-300 {
+            background-color: #d1d5db;
+        }
+
+        .text-gray-800 {
+            color: #1f2937;
+        }
+
+        .bg-green-100 {
+            background-color: #d1fae5;
+        }
+
+        .text-green-800 {
+            color: #065f46;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.15s;
+            border: 1px solid transparent;
+            transition: background-color 0.2s;
         }
-        .btn-smart {
-            background-color: #2563eb;
+
+        .btn-blue {
+            background-color: var(--color-accent);
             color: white;
-            margin-right: 0.5rem;
         }
-        .btn-smart:hover {
+
+        .btn-blue:hover {
             background-color: #1d4ed8;
         }
 
-        /* CONTENT SPLIT (Chat + Properties) */
-        .content-split {
-            display: flex;
-            flex-grow: 1;
-            overflow: hidden;
+        .btn-gray {
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            border-color: var(--color-border);
         }
 
-        /* CHAT THREAD */
-        .chat-thread-wrapper {
+        .btn-gray:hover {
+            background-color: var(--color-border);
+        }
+
+        .btn:disabled {
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-secondary);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Main Content Layout */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
             flex-grow: 1;
-            max-width: 800px; /* Max width for chat readability */
-            background-color: #ffffff;
-            border-right: 1px solid #e5e7eb;
+        }
+
+        /* Left Column: Description, Agent Actions, History */
+        .detail-main {
             display: flex;
             flex-direction: column;
-            padding: 0 0 0 2rem;
-        }
-        .chat-messages {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 2rem 2rem 0 0;
+            gap: 1.5rem;
         }
 
-        /* Message Bubbles */
-        .message {
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: flex-start;
-        }
-        .message-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: #9ca3af;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            flex-shrink: 0;
-            margin-right: 1rem;
-        }
-        .message-content {
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            max-width: 80%;
-            line-height: 1.4;
-        }
-        /* RTL SPECIFIC STYLES */
-        .message-content.rtl {
-            direction: rtl;
-            text-align: right;
-            /* Ensures Arabic font is clean if browser defaults are poor */
-            font-family: 'Arial', 'Tahoma', sans-serif; 
-        }
-
-        .user-message .message-avatar { background-color: #facc15; }
-        .user-message .message-content {
-            background-color: #f3f4f6;
-            color: #111827;
-        }
-        .agent-message { justify-content: flex-end; }
-        .agent-message .message-avatar { background-color: #2563eb; order: 2; margin-right: 0; margin-left: 1rem; }
-        .agent-message .message-content {
-            background-color: #2563eb;
-            color: white;
-            order: 1;
-        }
-        .message-info {
-            font-size: 0.75rem;
-            color: #9ca3af;
-            margin-top: 0.25rem;
-        }
-        .agent-message .message-info { text-align: right; }
-
-        /* Automation Message */
-        .automation-message {
-            text-align: center;
-            margin: 2rem 0;
-            font-size: 0.85rem;
-            color: #065f46;
-        }
-        .automation-message span {
-            background-color: #d1fae5;
-            padding: 0.5rem 1.25rem;
-            border-radius: 999px;
-            font-weight: 600;
-        }
-
-        /* Reply Box */
-        .reply-box {
-            padding: 1rem 2rem 1.5rem 0;
-            flex-shrink: 0;
-            border-top: 1px solid #e5e7eb;
-        }
-        .reply-box textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            resize: none;
-            font-family: inherit;
-            font-size: 1rem;
-            min-height: 80px;
-        }
-        .reply-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 0.5rem;
-        }
-        .btn-reply {
-            background-color: #2563eb;
-            color: white;
-            padding: 0.6rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.15s;
-        }
-
-        /* 3. PROPERTIES PANEL */
-        .properties-panel {
-            width: 300px;
-            flex-shrink: 0;
-            background-color: #ffffff;
+        .card {
+            background-color: var(--color-bg-secondary);
             padding: 1.5rem;
-            overflow-y: auto;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px var(--color-shadow);
         }
-        .panel-group {
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 0.5rem;
+        }
+
+        /* AI Card (Highlight) */
+        .ai-card {
+            border-left: 5px solid var(--color-accent);
+            background-color: var(--color-accent-bg);
+        }
+
+        .ai-card .card-title {
+            color: var(--color-accent);
+            border-bottom-color: var(--color-border);
+        }
+
+        /* Timeline/History */
+        .timeline {
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--color-border);
+        }
+
+        .timeline-item {
+            position: relative;
             margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid #e5e7eb;
+            padding-left: 1.5rem;
         }
-        .panel-group:last-child {
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--color-accent);
+            border: 2px solid var(--color-bg-secondary);
+            /* Dark/Light mode color is critical here */
+        }
+
+        [data-theme='dark'] .timeline-item::before {
+            border: 2px solid var(--color-bg-secondary);
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+        }
+
+        .timeline-detail {
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+            color: var(--color-text-secondary);
+        }
+
+        /* Right Column: Key Details */
+        .detail-aside {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .key-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--color-border);
+        }
+
+        .key-detail:last-child {
             border-bottom: none;
             padding-bottom: 0;
         }
-        .panel-title {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-            color: #4b5563;
-        }
-        .property {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.95rem;
-            margin-bottom: 0.4rem;
-        }
-        .property-label {
-            color: #6b7280;
-        }
-        .property-value {
+
+        .key-label {
             font-weight: 500;
+            color: var(--color-text-secondary);
         }
-        .log-entry {
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            background-color: #f9fafb;
-            border-left: 3px solid #10b981; /* Green for automation success */
-        }
-        .log-entry.manual {
-            border-left: 3px solid #f97316; /* Orange for manual action */
-        }
-        .log-entry-time {
-            color: #9ca3af;
-            font-size: 0.75rem;
-            display: block;
-            margin-top: 0.2rem;
+
+        .key-value {
+            font-weight: 600;
+            color: var(--color-text-primary);
         }
     </style>
 </head>
+
 <body>
-    <div class="main-layout">
-        <div class="sidebar">
-            <a href="index.html" class="sidebar-logo">
-                <img src="./logo.png" alt="DeskGo Logo" style="height: 120px;"> </a>
-
-            <a href="tickets.html" class="nav-item">
-                <span class="nav-icon">📊</span> Tickets List
-            </a>
-            <a href="#" class="nav-item active">
-                <span class="nav-icon">🎫</span> Ticket Details
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon">⚙️</span> Automations
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon">👤</span> Users & Teams
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon">🛠️</span> Settings
+    <div class="sidebar">
+        <div class="logo">
+            <a href="index.html">
+                <img src="./logo.png" alt="DeskGo Logo">
             </a>
         </div>
+        <a href="tickets.html" class="nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="M19.5 3a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 3v18a2.25 2.25 0 002.25 2.25h10.5A2.25 2.25 0 0019.5 21V3zM16.5 6a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 3a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 3a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 3a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 3a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6 6.75A.75.75 0 016.75 6h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 6.75zM6 9.75A.75.75 0 016.75 9h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 9.75zM6 12.75A.75.75 0 016.75 12h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 12.75zM6 15.75A.75.75 0 016.75 15h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 15.75zM6 18.75A.75.75 0 016.75 18h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 18.75z" />
+            </svg>
+            Tickets
+        </a>
+        <a href="dashboard.html" class="nav-link active">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M3 3.75A.75.75 0 013.75 3h16.5a.75.75 0 01.75.75v16.5a.75.75 0 01-.75.75H3.75a.75.75 0 01-.75-.75V3.75zM6.75 12a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM12.75 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM15.75 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM9.75 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
+                    clip-rule="evenodd" />
+            </svg>
+            Dashboard (Charts)
+        </a>
+        <a href="login.html" class="nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M7.5 3a.75.75 0 000 1.5H9v.75A7.5 7.5 0 011.5 12a7.5 7.5 0 017.5-7.5V4.5h1.5a.75.75 0 000-1.5H7.5zm9 9a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM15 12a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H15.75A.75.75 0 0115 12zM7.5 17.25A7.502 7.502 0 011.5 12a7.5 7.5 0 017.5-7.5V5.25H9v-.75A7.5 7.5 0 0116.5 12a7.5 7.5 0 01-7.5 7.5V18h-1.5a.75.75 0 010-1.5H7.5z"
+                    clip-rule="evenodd" />
+            </svg>
+            Logout
+        </a>
 
-        <div class="ticket-area load-animation">
-
-            <div class="ticket-header">
-                <div class="ticket-title-group">
-                    <span id="ticketStatusBadge" class="status-badge status-open">OPEN</span>
-                    <h1 id="ticketTitle">T-000: Loading Ticket Details...</h1>
-                    <span id="ticketInfo">Opened by User (user@company.com)</span>
-                </div>
-                <div class="header-actions">
-                    <a href="#" class="btn btn-smart">
-                        ✨ Run Automation: Password Reset
-                    </a>
-                    <a href="#" class="btn btn-primary">Close Ticket</a>
-                </div>
-            </div>
-
-            <div class="content-split">
-
-                <div class="chat-thread-wrapper">
-                    <div class="chat-messages">
-
-                        <div class="message user-message">
-                            <div class="message-avatar">US</div>
-                            <div>
-                                <div class="message-content" id="ticketDescriptionContent">
-                                    The initial message content will be loaded here based on the ticket ID.
-                                </div>
-                                <div class="message-info">Ticket Initiator · <span id="initialMessageTime">11:30 AM</span></div>
-                            </div>
-                        </div>
-
-                        <div id="automationTrigger" class="automation-message" style="display: none;">
-                            <span>✅ Automation: Priority set to **[PRIORITY]** based on content analysis.</span>
-                        </div>
-
-                        <div class="message agent-message">
-                            <div>
-                                <div class="message-content" id="agentMessageContent">
-                                    Thanks for reaching out! I've confirmed your issue and am starting the process now. I will follow up with an update in the next hour.
-                                </div>
-                                <div class="message-info" id="agentMessageInfo">You (Agent) · 11:45 AM</div>
-                            </div>
-                            <div class="message-avatar">IT</div>
-                        </div>
-
-                    </div>
-
-                    <div class="reply-box">
-                        <textarea placeholder="Type your reply here... (Supports English and Arabic)"></textarea>
-                        <div class="reply-actions">
-                            <a href="#" class="btn-reply">Send Reply</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="properties-panel">
-                    <div class="panel-group">
-                        <div class="panel-title">Ticket Details</div>
-                        <div class="property">
-                            <span class="property-label">Priority</span>
-                            <span id="propertyPriority" class="property-value">Loading...</span>
-                        </div>
-                        <div class="property">
-                            <span class="property-label">Category</span>
-                            <span id="propertyCategory" class="property-value">Loading...</span>
-                        </div>
-                        <div class="property">
-                            <span class="property-label">Assignee</span>
-                            <span class="property-value deskgo-blue">You (Karim)</span>
-                        </div>
-                        <div class="property">
-                            <span class="property-label">SLA</span>
-                            <span class="property-value">24 Hours (On Track)</span>
-                        </div>
-                    </div>
-
-                    <div class="panel-group">
-                        <div class="panel-title">Automation & Activity Log</div>
-
-                        <div class="log-entry">
-                            **System Automation** executed: Sent auto-reply confirming receipt.
-                            <span class="log-entry-time">11:35 AM</span>
-                        </div>
-                        <div class="log-entry" id="logPriority">
-                            **System Automation** triggered: Priority set to **High**.
-                            <span class="log-entry-time">11:35 AM</span>
-                        </div>
-                        <div class="log-entry manual">
-                            **You (Karim)** replied to the user.
-                            <span class="log-entry-time">11:46 AM</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <a href="new-ticket.html" class="btn btn-primary">
+            Submit New Ticket
+        </a>
     </div>
 
+    <div class="main-content">
+        <div class="ticket-header">
+            <div class="ticket-header-left">
+                <h1 id="ticketTitle">Ticket Loading...</h1>
+                <div class="ticket-meta">
+                    <span id="ticketId">#000</span>
+                    <span class="dot-separator">·</span>
+                    <span id="ticketRequester"></span>
+                    <span class="dot-separator">·</span>
+                    <span id="ticketTimestamp"></span>
+                </div>
+            </div>
+            <div class="ticket-header-right">
+                <div class="action-buttons" id="actionButtons">
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-grid">
+            <div class="detail-main">
+                <div class="card ai-card">
+                    <div class="card-title">✨ AI Suggested Resolution</div>
+                    <div id="aiSummary" style="margin-bottom: 0.5rem; font-weight: 500;">Loading AI Summary...</div>
+                    <p id="aiAction">Loading AI Action...</p>
+                    <button id="aiResolveButton" class="btn btn-blue" style="margin-top: 1rem; display: none;"
+                        onclick="aiResolveTicket()">Simulate AI Resolution</button>
+                    <p id="aiResolvedMessage"
+                        style="margin-top: 1rem; color: #065f46; font-weight: 600; display: none;">AI Resolution
+                        Completed. Awaiting Agent Approval.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Ticket Description</div>
+                    <p id="ticketDescription"></p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Event History</div>
+                    <div class="timeline" id="eventTimeline">
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-aside">
+                <div class="card">
+                    <div class="card-title">Key Details</div>
+                    <div id="statusDetail" class="key-detail">
+                        <span class="key-label">Status</span>
+                        <span id="ticketStatusBadge" class="key-value"></span>
+                    </div>
+                    <div class="key-detail">
+                        <span class="key-label">Priority</span>
+                        <span id="ticketPriority" class="key-value"></span>
+                    </div>
+                    <div class="key-detail">
+                        <span class="key-label">Category</span>
+                        <span id="ticketCategory" class="key-value"></span>
+                    </div>
+                    <div class="key-detail">
+                        <span class="key-label">Assigned Agent</span>
+                        <span class="key-value">John Doe</span>
+                    </div>
+                    <div class="key-detail">
+                        <span class="key-label">SLA Countdown</span>
+                        <span class="key-value" style="color: #ef4444;">1h 32m Left</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Agent Notes</div>
+                    <textarea rows="5"
+                        style="width: 100%; border: 1px solid var(--color-border); padding: 0.5rem; border-radius: 0.5rem; background-color: var(--color-bg-primary); color: var(--color-text-primary);"
+                        placeholder="Add internal notes..."></textarea>
+                    <button class="btn btn-gray" style="margin-top: 0.5rem;">Save Note</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="./data.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Function to check if content contains Arabic characters (for RTL support)
-            function containsArabic(text) {
-                // Unicode range for most common Arabic characters
-                return /[\u0600-\u06FF]/.test(text);
+        let currentTicket = null;
+
+        // Utility Functions (Duplicated for consistency, but should ideally be in data.js)
+        function formatTimestamp(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        }
+
+        function getTicketStatusHtml(status) {
+            let color = 'gray';
+            let bgColor = 'bg-gray-200';
+            let text = status.toUpperCase();
+
+            if (status === 'open') {
+                color = 'red';
+                bgColor = 'bg-red-100';
+            } else if (status === 'processing') {
+                color = 'blue';
+                bgColor = 'bg-blue-100';
+            } else if (status === 'resolved') {
+                color = 'green';
+                bgColor = 'bg-green-100';
+            } else if (status === 'closed') {
+                color = 'gray';
+                bgColor = 'bg-gray-300';
             }
 
-            // 1. Get the ticket ID from the URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const ticketId = parseInt(urlParams.get('id')) || 1; 
+            return `<span class="badge ${bgColor} text-${color}-800">${text}</span>`;
+        }
 
-            // 2. Find the matching ticket in the globally available 'tickets' array (from data.js)
-            const ticket = tickets.find(t => t.id === ticketId);
+        // --- CORE APPLICATION FUNCTIONS ---
+
+        function updateTicketStatus(newStatus, eventDetail) {
+            if (!currentTicket) return;
+
+            // 1. Update the ticket object
+            currentTicket.status = newStatus;
+
+            // 2. Add new event to history
+            const newEvent = {
+                type: 'Status Update',
+                detail: eventDetail,
+                timestamp: new Date().toISOString()
+            };
+            currentTicket.events.push(newEvent);
+
+            // 3. Save to localStorage (CRITICAL for persistence)
+            const ticketIndex = window.tickets.findIndex(t => t.id === currentTicket.id);
+            if (ticketIndex !== -1) {
+                window.tickets[ticketIndex] = currentTicket;
+                localStorage.setItem('demoTickets', JSON.stringify(window.tickets));
+            }
+
+            // 4. Re-render UI
+            renderTicket(currentTicket);
+        }
+
+        // Action Handlers
+        window.processTicket = function () {
+            if (currentTicket.status === 'open') {
+                updateTicketStatus('processing', 'Agent John Doe started working on the ticket.');
+            }
+        };
+
+        window.aiResolveTicket = function () {
+            if (currentTicket.status === 'processing') {
+                document.getElementById('aiResolveButton').style.display = 'none';
+                document.getElementById('aiResolvedMessage').style.display = 'block';
+
+                // Simulate delay for AI completion (1 second)
+                setTimeout(() => {
+                    updateTicketStatus('resolved', 'AI Resolution simulated: Suggested fix applied and sent to requester for CSAT.');
+                }, 1000);
+            }
+        };
+
+        window.closeTicket = function () {
+            if (currentTicket.status === 'resolved') {
+                const closeReason = prompt("Enter closure reason (e.g., CSAT received, issue confirmed resolved):", "Customer confirmed issue resolved.");
+                if (closeReason) {
+                    updateTicketStatus('closed', `Ticket formally closed by Agent John Doe. Reason: ${closeReason}`);
+                }
+            } else {
+                alert("Ticket must be 'resolved' before it can be closed.");
+            }
+        };
+
+        // --- RENDERING UI ---
+
+        function renderActionButtons(ticket) {
+            const container = document.getElementById('actionButtons');
+            container.innerHTML = '';
+
+            let buttonsHtml = '';
+
+            if (ticket.status === 'open') {
+                buttonsHtml += `<button class="btn btn-blue" onclick="processTicket()">Process Ticket</button>`;
+                document.getElementById('aiResolveButton').style.display = 'none';
+                document.getElementById('aiResolvedMessage').style.display = 'none';
+            } else if (ticket.status === 'processing') {
+                buttonsHtml += `<button class="btn btn-gray" disabled>In Progress...</button>`;
+                document.getElementById('aiResolveButton').style.display = 'block';
+                document.getElementById('aiResolvedMessage').style.display = 'none';
+            } else if (ticket.status === 'resolved') {
+                buttonsHtml += `<button class="btn btn-blue" onclick="closeTicket()">Close Ticket</button>`;
+                document.getElementById('aiResolveButton').style.display = 'none';
+                document.getElementById('aiResolvedMessage').style.display = 'block';
+                document.getElementById('aiResolvedMessage').textContent = 'Ready for Closure (AI Resolution Successful)';
+            } else if (ticket.status === 'closed') {
+                buttonsHtml += `<button class="btn btn-gray" disabled>Closed</button>`;
+                document.getElementById('aiResolveButton').style.display = 'none';
+                document.getElementById('aiResolvedMessage').style.display = 'none';
+            }
+
+            container.innerHTML = buttonsHtml;
+        }
+
+        function renderEventTimeline(events) {
+            const timeline = document.getElementById('eventTimeline');
+            timeline.innerHTML = '';
+
+            // Sort by newest first for display
+            const sortedEvents = [...events].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            sortedEvents.forEach(event => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                item.innerHTML = `
+                    <div class="timeline-title">${event.type}</div>
+                    <div class="timeline-date">${formatTimestamp(event.timestamp)}</div>
+                    <div class="timeline-detail">${event.detail}</div>
+                `;
+                timeline.appendChild(item);
+            });
+        }
+
+        function renderTicket(ticket) {
+            currentTicket = ticket; // Set the global variable
+
+            // Header and Meta
+            document.getElementById('ticketTitle').textContent = ticket.title;
+            document.getElementById('ticketId').textContent = `#${ticket.id}`;
+            document.getElementById('ticketRequester').textContent = `${ticket.name} (${ticket.email})`;
+            document.getElementById('ticketTimestamp').textContent = formatTimestamp(ticket.timestamp);
+
+            // AI Card Details
+            document.getElementById('aiSummary').textContent = ticket.ai_summary || 'AI Summary Pending...';
+            document.getElementById('aiAction').textContent = ticket.ai_action || 'AI Action Pending...';
+
+            // Description
+            document.getElementById('ticketDescription').textContent = ticket.description;
+
+            // Key Details
+            document.getElementById('ticketStatusBadge').innerHTML = getTicketStatusHtml(ticket.status);
+            document.getElementById('ticketPriority').textContent = ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1);
+            document.getElementById('ticketCategory').textContent = ticket.category;
+
+            // Dynamic Elements
+            renderActionButtons(ticket);
+            renderEventTimeline(ticket.events);
+        }
+
+        function loadTicket() {
+            // Get ticket ID from URL query parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const ticketId = parseInt(urlParams.get('id'));
+
+            if (!ticketId) {
+                document.getElementById('ticketTitle').textContent = 'Error: No Ticket ID Provided';
+                document.getElementById('ticketRequester').textContent = 'Please return to the ticket list.';
+                return;
+            }
+
+            // Find the ticket in the global array (loaded from local storage via data.js)
+            const ticket = window.tickets.find(t => t.id === ticketId);
 
             if (ticket) {
-                const priorityClass = `status-${ticket.priority}`;
-                const descriptionElement = document.getElementById('ticketDescriptionContent');
-                const agentContentElement = document.getElementById('agentMessageContent');
-                const agentInfoElement = document.getElementById('agentMessageInfo');
-
-                // --- RTL LOGIC (User Message) ---
-                const isArabicTicket = containsArabic(ticket.description);
-
-                if (isArabicTicket) {
-                    descriptionElement.classList.add('rtl');
-
-                    // --- RTL LOGIC (Agent Response) ---
-                    const arabicResponse = "شكراً لتواصلك! لقد أكدت مشكلتك وأنا أبدأ العملية الآن. سأتابع معك بتحديث خلال الساعة القادمة.";
-
-                    // Update agent response content to Arabic
-                    agentContentElement.textContent = arabicResponse;
-                    // Apply RTL to agent response bubble
-                    agentContentElement.classList.add('rtl'); 
-
-                    // Update agent info text
-                    agentInfoElement.textContent = "You (Agent) · 11:45 AM";
-                }
-
-                // --- Inject Dynamic Content ---
-
-                // HEADER
-                document.getElementById('ticketStatusBadge').textContent = ticket.status.toUpperCase();
-                document.getElementById('ticketStatusBadge').className = `status-badge ${priorityClass}`;
-                document.getElementById('ticketTitle').textContent = `T-${ticket.id}: ${ticket.title}`;
-                document.getElementById('ticketInfo').textContent = `Opened by User in **${ticket.category}**`;
-
-                // CHAT THREAD (Initial Message)
-                descriptionElement.textContent = ticket.description;
-
-                // AUTOMATION LOGIC
-                const automationElement = document.getElementById('automationTrigger');
-                const logPriorityElement = document.getElementById('logPriority');
-
-                // Update the automation message content and display it
-                automationElement.style.display = 'block';
-                automationElement.innerHTML = `<span>✅ Automation: Priority set to **${ticket.priority.toUpperCase()}** based on content analysis.</span>`;
-
-                // Update the priority log entry
-                logPriorityElement.innerHTML = `**System Automation** triggered: Priority set to **${ticket.priority.toUpperCase()}**.
-                    <span class="log-entry-time">11:35 AM</span>`;
-
-                // PROPERTIES PANEL
-                document.getElementById('propertyPriority').textContent = ticket.priority.toUpperCase();
-                document.getElementById('propertyCategory').textContent = ticket.category;
+                renderTicket(ticket);
             } else {
-                // Fallback for an invalid ticket ID
-                document.getElementById('ticketTitle').textContent = 'Error: Ticket Not Found';
+                document.getElementById('ticketTitle').textContent = `Error: Ticket #${ticketId} Not Found`;
             }
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme setup
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+
+            // Load the specific ticket requested
+            loadTicket();
         });
     </script>
 </body>
+
 </html>
