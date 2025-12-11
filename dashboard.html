@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Ticket Detail - DeskGo</title>
+    <title>Dashboard - DeskGo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="./favicon.png">
     <style>
@@ -18,6 +18,8 @@
             --color-accent: #2563eb;
             --color-shadow: rgba(0, 0, 0, 0.05);
             --color-sidebar-bg: #ffffff;
+            --color-overlay-bg: rgba(0, 0, 0, 0.5);
+            /* For mobile overlay */
         }
 
         [data-theme='dark'] {
@@ -30,6 +32,8 @@
             --color-accent: #60a5fa;
             --color-shadow: rgba(0, 0, 0, 0.05);
             --color-sidebar-bg: #1f2937;
+            --color-overlay-bg: rgba(0, 0, 0, 0.7);
+            /* For dark mobile overlay */
         }
 
         /* Global Styles */
@@ -45,9 +49,12 @@
             color: var(--color-text-primary);
             display: flex;
             min-height: 100vh;
+            /* Allow scrolling on mobile */
+            overflow-x: hidden;
+            position: relative;
         }
 
-        /* Layout */
+        /* Layout (Desktop Default) */
         .sidebar {
             width: 250px;
             background-color: var(--color-sidebar-bg);
@@ -56,6 +63,9 @@
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            z-index: 1000;
+            /* Ensure sidebar is above main content */
+            transition: transform 0.3s ease;
         }
 
         .main-content {
@@ -115,131 +125,78 @@
             background-color: #1e40af;
         }
 
-        /* Ticket Header */
-        .ticket-header {
+        /* Dashboard specific styles */
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* New: Mobile Menu Button Style */
+        #mobileMenuButton {
+            display: none;
+            /* Hidden by default on desktop */
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--color-text-primary);
+        }
+
+        #mobileMenuButton svg {
+            width: 30px;
+            height: 30px;
+            display: block;
+        }
+
+        /* Stats and Charts Styles (Unchanged) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
             background-color: var(--color-bg-secondary);
             padding: 1.5rem;
             border-radius: 0.75rem;
-            margin-bottom: 1rem;
             box-shadow: 0 1px 3px var(--color-shadow);
+            border-left: 5px solid var(--color-accent);
         }
 
-        .ticket-header-left h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
+        .stat-card.red {
+            border-left-color: #ef4444;
+        }
+
+        .stat-card.green {
+            border-left-color: #10b981;
+        }
+
+        .stat-card.yellow {
+            border-left-color: #f59e0b;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
             margin-bottom: 0.25rem;
         }
 
-        .ticket-meta {
-            font-size: 0.9rem;
-            color: var(--color-text-secondary);
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
         }
 
-        .dot-separator {
-            padding: 0 0.5rem;
-        }
-
-        /* Status Badge */
-        .badge {
-            display: inline-block;
-            padding: 0.3rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .bg-red-100 {
-            background-color: #fee2e2;
-        }
-
-        .text-red-800 {
-            color: #991b1b;
-        }
-
-        .bg-blue-100 {
-            background-color: #dbeafe;
-        }
-
-        .text-blue-800 {
-            color: #1e40af;
-        }
-
-        .bg-gray-200 {
-            background-color: #e5e7eb;
-        }
-
-        .bg-gray-300 {
-            background-color: #d1d5db;
-        }
-
-        .text-gray-800 {
-            color: #1f2937;
-        }
-
-        .bg-green-100 {
-            background-color: #d1fae5;
-        }
-
-        .text-green-800 {
-            color: #065f46;
-        }
-
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: background-color 0.2s;
-        }
-
-        .btn-blue {
-            background-color: var(--color-accent);
-            color: white;
-        }
-
-        .btn-blue:hover {
-            background-color: #1d4ed8;
-        }
-
-        .btn-gray {
-            background-color: var(--color-bg-primary);
-            color: var(--color-text-primary);
-            border-color: var(--color-border);
-        }
-
-        .btn-gray:hover {
-            background-color: var(--color-border);
-        }
-
-        .btn:disabled {
-            background-color: var(--color-bg-primary);
-            color: var(--color-text-secondary);
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        /* Main Content Layout */
-        .detail-grid {
+        .chart-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 1.5rem;
-            flex-grow: 1;
-        }
-
-        /* Left Column: Description, Agent Actions, History */
-        .detail-main {
-            display: flex;
-            flex-direction: column;
             gap: 1.5rem;
         }
 
@@ -248,6 +205,7 @@
             padding: 1.5rem;
             border-radius: 0.75rem;
             box-shadow: 0 1px 3px var(--color-shadow);
+            min-height: 300px;
         }
 
         .card-title {
@@ -258,106 +216,126 @@
             padding-bottom: 0.5rem;
         }
 
-        /* AI Card (Highlight) */
-        .ai-card {
-            border-left: 5px solid var(--color-accent);
-            background-color: var(--color-accent-bg);
-        }
+        /* ---------------------------------- */
+        /* PHASE 2: MOBILE MEDIA QUERIES      */
+        /* ---------------------------------- */
 
-        .ai-card .card-title {
-            color: var(--color-accent);
-            border-bottom-color: var(--color-border);
-        }
+        @media (max-width: 768px) {
 
-        /* Timeline/History */
-        .timeline {
-            position: relative;
-            padding-left: 1rem;
-        }
+            /* 1. CORE LAYOUT: Sidebar becomes a fixed, off-screen overlay */
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: 250px;
+                transform: translateX(-100%);
+                /* Start off-screen */
+                box-shadow: 2px 0 5px var(--color-shadow);
+                display: flex;
+                /* Keep display flex for internal layout */
+            }
 
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background-color: var(--color-border);
-        }
+            /* State when menu button is clicked */
+            .sidebar.open {
+                transform: translateX(0);
+                /* Slide into view */
+            }
 
-        .timeline-item {
-            position: relative;
-            margin-bottom: 1.5rem;
-            padding-left: 1.5rem;
-        }
+            .main-content {
+                padding: 1rem;
+                /* Reduced padding for more screen space */
+                width: 100%;
+                /* Ensure main content uses full width */
+            }
 
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -5px;
-            top: 5px;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: var(--color-accent);
-            border: 2px solid var(--color-bg-secondary);
-            /* Dark/Light mode color is critical here */
-        }
+            /* 2. HEADER: Adjust layout and show the menu button */
+            .header {
+                /* We need to restructure the header to fit the new button */
+                flex-direction: row;
+                /* Keep elements inline */
+                justify-content: flex-start;
+                /* Start from the left */
+                align-items: center;
+                gap: 1rem;
+                /* Space between button and title */
+                margin-bottom: 1rem;
+            }
 
-        [data-theme='dark'] .timeline-item::before {
-            border: 2px solid var(--color-bg-secondary);
-        }
+            .header h1 {
+                font-size: 1.5rem;
+                margin-bottom: 0;
+                /* Remove bottom margin from previous step */
+                order: 2;
+                /* Place title after the menu button */
+            }
 
-        .timeline-title {
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 0.2rem;
-        }
+            #mobileMenuButton {
+                display: block;
+                /* Show the button on mobile */
+                order: 1;
+                /* Place button first */
+            }
 
-        .timeline-date {
-            font-size: 0.8rem;
-            color: var(--color-text-secondary);
-        }
+            #dateRange {
+                margin-left: auto;
+                /* Push dropdown to the right */
+                order: 3;
+            }
 
-        .timeline-detail {
-            font-size: 0.9rem;
-            margin-top: 0.3rem;
-            color: var(--color-text-secondary);
-        }
+            /* 3. STATS GRID: Collapse 4-column to 2-column or 1-column */
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
 
-        /* Right Column: Key Details */
-        .detail-aside {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
+            @media (max-width: 480px) {
+                .stats-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
 
-        .key-detail {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px dashed var(--color-border);
-        }
+            /* 4. CHART GRID: Collapse two-column to a single column stack */
+            .chart-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
 
-        .key-detail:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
+            /* 5. CARD REDUCTIONS */
+            .card {
+                padding: 1rem;
+                min-height: 250px;
+            }
 
-        .key-label {
-            font-weight: 500;
-            color: var(--color-text-secondary);
-        }
+            .card-title {
+                font-size: 1.1rem;
+                margin-bottom: 0.75rem;
+            }
 
-        .key-value {
-            font-weight: 600;
-            color: var(--color-text-primary);
+            /* New: Backdrop overlay when menu is open */
+            .sidebar-backdrop {
+                display: none;
+            }
+
+            .sidebar-backdrop.open {
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-color: var(--color-overlay-bg);
+                z-index: 999;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="sidebar">
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="sidebar" id="sidebar">
         <div class="logo">
             <a href="index.html">
                 <img src="./logo.png" alt="DeskGo Logo">
@@ -393,278 +371,146 @@
     </div>
 
     <div class="main-content">
-        <div class="ticket-header">
-            <div class="ticket-header-left">
-                <h1 id="ticketTitle">Ticket Loading...</h1>
-                <div class="ticket-meta">
-                    <span id="ticketId">#000</span>
-                    <span class="dot-separator">·</span>
-                    <span id="ticketRequester"></span>
-                    <span class="dot-separator">·</span>
-                    <span id="ticketTimestamp"></span>
-                </div>
+        <div class="header">
+            <button id="mobileMenuButton">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+
+            <h1>Dashboard Overview</h1>
+            <select id="dateRange"
+                style="padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--color-border); background-color: var(--color-bg-secondary); color: var(--color-text-primary);">
+                <option value="today">Today</option>
+                <option value="last_7">Last 7 Days</option>
+                <option value="last_30">Last 30 Days</option>
+            </select>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card red">
+                <div class="stat-label">Tickets Open</div>
+                <div class="stat-value" id="openCount">12</div>
             </div>
-            <div class="ticket-header-right">
-                <div class="action-buttons" id="actionButtons">
-                </div>
+            <div class="stat-card green">
+                <div class="stat-label">Tickets Resolved</div>
+                <div class="stat-value" id="resolvedCount">85</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="stat-label">Avg. Resolution Time</div>
+                <div class="stat-value" id="avgTime">2h 45m</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Agent CSAT Score</div>
+                <div class="stat-value" id="csatScore">92%</div>
             </div>
         </div>
 
-        <div class="detail-grid">
-            <div class="detail-main">
-                <div class="card ai-card">
-                    <div class="card-title">✨ AI Suggested Resolution</div>
-                    <div id="aiSummary" style="margin-bottom: 0.5rem; font-weight: 500;">Loading AI Summary...</div>
-                    <p id="aiAction">Loading AI Action...</p>
-                    <button id="aiResolveButton" class="btn btn-blue" style="margin-top: 1rem; display: none;"
-                        onclick="aiResolveTicket()">Simulate AI Resolution</button>
-                    <p id="aiResolvedMessage"
-                        style="margin-top: 1rem; color: #065f46; font-weight: 600; display: none;">AI Resolution
-                        Completed. Awaiting Agent Approval.</p>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Ticket Description</div>
-                    <p id="ticketDescription"></p>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Event History</div>
-                    <div class="timeline" id="eventTimeline">
-                    </div>
-                </div>
+        <div class="chart-grid">
+            <div class="card">
+                <div class="card-title">Daily Ticket Volume</div>
+                <canvas id="dailyVolumeChart" style="max-height: 80%;"></canvas>
             </div>
-
-            <div class="detail-aside">
-                <div class="card">
-                    <div class="card-title">Key Details</div>
-                    <div id="statusDetail" class="key-detail">
-                        <span class="key-label">Status</span>
-                        <span id="ticketStatusBadge" class="key-value"></span>
-                    </div>
-                    <div class="key-detail">
-                        <span class="key-label">Priority</span>
-                        <span id="ticketPriority" class="key-value"></span>
-                    </div>
-                    <div class="key-detail">
-                        <span class="key-label">Category</span>
-                        <span id="ticketCategory" class="key-value"></span>
-                    </div>
-                    <div class="key-detail">
-                        <span class="key-label">Assigned Agent</span>
-                        <span class="key-value">John Doe</span>
-                    </div>
-                    <div class="key-detail">
-                        <span class="key-label">SLA Countdown</span>
-                        <span class="key-value" style="color: #ef4444;">1h 32m Left</span>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Agent Notes</div>
-                    <textarea rows="5"
-                        style="width: 100%; border: 1px solid var(--color-border); padding: 0.5rem; border-radius: 0.5rem; background-color: var(--color-bg-primary); color: var(--color-text-primary);"
-                        placeholder="Add internal notes..."></textarea>
-                    <button class="btn btn-gray" style="margin-top: 0.5rem;">Save Note</button>
-                </div>
+            <div class="card">
+                <div class="card-title">Tickets by Category</div>
+                <canvas id="categoryChart" style="max-height: 80%;"></canvas>
             </div>
         </div>
-
     </div>
 
-    <script src="./data.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script>
-        let currentTicket = null;
-
-        // Utility Functions (Duplicated for consistency, but should ideally be in data.js)
-        function formatTimestamp(isoString) {
-            const date = new Date(isoString);
-            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-        }
-
-        function getTicketStatusHtml(status) {
-            let color = 'gray';
-            let bgColor = 'bg-gray-200';
-            let text = status.toUpperCase();
-
-            if (status === 'open') {
-                color = 'red';
-                bgColor = 'bg-red-100';
-            } else if (status === 'processing') {
-                color = 'blue';
-                bgColor = 'bg-blue-100';
-            } else if (status === 'resolved') {
-                color = 'green';
-                bgColor = 'bg-green-100';
-            } else if (status === 'closed') {
-                color = 'gray';
-                bgColor = 'bg-gray-300';
-            }
-
-            return `<span class="badge ${bgColor} text-${color}-800">${text}</span>`;
-        }
-
-        // --- CORE APPLICATION FUNCTIONS ---
-
-        function updateTicketStatus(newStatus, eventDetail) {
-            if (!currentTicket) return;
-
-            // 1. Update the ticket object
-            currentTicket.status = newStatus;
-
-            // 2. Add new event to history
-            const newEvent = {
-                type: 'Status Update',
-                detail: eventDetail,
-                timestamp: new Date().toISOString()
-            };
-            currentTicket.events.push(newEvent);
-
-            // 3. Save to localStorage (CRITICAL for persistence)
-            const ticketIndex = window.tickets.findIndex(t => t.id === currentTicket.id);
-            if (ticketIndex !== -1) {
-                window.tickets[ticketIndex] = currentTicket;
-                localStorage.setItem('demoTickets', JSON.stringify(window.tickets));
-            }
-
-            // 4. Re-render UI
-            renderTicket(currentTicket);
-        }
-
-        // Action Handlers
-        window.processTicket = function () {
-            if (currentTicket.status === 'open') {
-                updateTicketStatus('processing', 'Agent John Doe started working on the ticket.');
+        // Dummy data for charts (unchanged)
+        const chartData = {
+            dailyVolume: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                data: [15, 20, 25, 30, 18, 5, 2]
+            },
+            categories: {
+                labels: ['Technical', 'Billing', 'Access', 'Feature Request'],
+                data: [40, 30, 20, 10],
+                colors: ['#2563eb', '#10b981', '#f59e0b', '#ef4444']
             }
         };
 
-        window.aiResolveTicket = function () {
-            if (currentTicket.status === 'processing') {
-                document.getElementById('aiResolveButton').style.display = 'none';
-                document.getElementById('aiResolvedMessage').style.display = 'block';
-
-                // Simulate delay for AI completion (1 second)
-                setTimeout(() => {
-                    updateTicketStatus('resolved', 'AI Resolution simulated: Suggested fix applied and sent to requester for CSAT.');
-                }, 1000);
-            }
-        };
-
-        window.closeTicket = function () {
-            if (currentTicket.status === 'resolved') {
-                const closeReason = prompt("Enter closure reason (e.g., CSAT received, issue confirmed resolved):", "Customer confirmed issue resolved.");
-                if (closeReason) {
-                    updateTicketStatus('closed', `Ticket formally closed by Agent John Doe. Reason: ${closeReason}`);
+        function renderCharts() {
+            // ... (Chart rendering logic - unchanged)
+            // Daily Volume Chart (Bar Chart)
+            new Chart(document.getElementById('dailyVolumeChart'), {
+                type: 'bar',
+                data: {
+                    labels: chartData.dailyVolume.labels,
+                    datasets: [{
+                        label: 'Tickets',
+                        data: chartData.dailyVolume.data,
+                        backgroundColor: chartData.categories.colors[0],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
                 }
-            } else {
-                alert("Ticket must be 'resolved' before it can be closed.");
-            }
-        };
+            });
 
-        // --- RENDERING UI ---
-
-        function renderActionButtons(ticket) {
-            const container = document.getElementById('actionButtons');
-            container.innerHTML = '';
-
-            let buttonsHtml = '';
-
-            if (ticket.status === 'open') {
-                buttonsHtml += `<button class="btn btn-blue" onclick="processTicket()">Process Ticket</button>`;
-                document.getElementById('aiResolveButton').style.display = 'none';
-                document.getElementById('aiResolvedMessage').style.display = 'none';
-            } else if (ticket.status === 'processing') {
-                buttonsHtml += `<button class="btn btn-gray" disabled>In Progress...</button>`;
-                document.getElementById('aiResolveButton').style.display = 'block';
-                document.getElementById('aiResolvedMessage').style.display = 'none';
-            } else if (ticket.status === 'resolved') {
-                buttonsHtml += `<button class="btn btn-blue" onclick="closeTicket()">Close Ticket</button>`;
-                document.getElementById('aiResolveButton').style.display = 'none';
-                document.getElementById('aiResolvedMessage').style.display = 'block';
-                document.getElementById('aiResolvedMessage').textContent = 'Ready for Closure (AI Resolution Successful)';
-            } else if (ticket.status === 'closed') {
-                buttonsHtml += `<button class="btn btn-gray" disabled>Closed</button>`;
-                document.getElementById('aiResolveButton').style.display = 'none';
-                document.getElementById('aiResolvedMessage').style.display = 'none';
-            }
-
-            container.innerHTML = buttonsHtml;
-        }
-
-        function renderEventTimeline(events) {
-            const timeline = document.getElementById('eventTimeline');
-            timeline.innerHTML = '';
-
-            // Sort by newest first for display
-            const sortedEvents = [...events].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-            sortedEvents.forEach(event => {
-                const item = document.createElement('div');
-                item.className = 'timeline-item';
-                item.innerHTML = `
-                    <div class="timeline-title">${event.type}</div>
-                    <div class="timeline-date">${formatTimestamp(event.timestamp)}</div>
-                    <div class="timeline-detail">${event.detail}</div>
-                `;
-                timeline.appendChild(item);
+            // Category Chart (Doughnut Chart)
+            new Chart(document.getElementById('categoryChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: chartData.categories.labels,
+                    datasets: [{
+                        label: 'Tickets',
+                        data: chartData.categories.data,
+                        backgroundColor: chartData.categories.colors,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
             });
         }
 
-        function renderTicket(ticket) {
-            currentTicket = ticket; // Set the global variable
+        // --- NEW JAVASCRIPT FOR MOBILE MENU ---
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            const isOpen = sidebar.classList.toggle('open');
+            backdrop.classList.toggle('open', isOpen);
 
-            // Header and Meta
-            document.getElementById('ticketTitle').textContent = ticket.title;
-            document.getElementById('ticketId').textContent = `#${ticket.id}`;
-            document.getElementById('ticketRequester').textContent = `${ticket.name} (${ticket.email})`;
-            document.getElementById('ticketTimestamp').textContent = formatTimestamp(ticket.timestamp);
-
-            // AI Card Details
-            document.getElementById('aiSummary').textContent = ticket.ai_summary || 'AI Summary Pending...';
-            document.getElementById('aiAction').textContent = ticket.ai_action || 'AI Action Pending...';
-
-            // Description
-            document.getElementById('ticketDescription').textContent = ticket.description;
-
-            // Key Details
-            document.getElementById('ticketStatusBadge').innerHTML = getTicketStatusHtml(ticket.status);
-            document.getElementById('ticketPriority').textContent = ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1);
-            document.getElementById('ticketCategory').textContent = ticket.category;
-
-            // Dynamic Elements
-            renderActionButtons(ticket);
-            renderEventTimeline(ticket.events);
-        }
-
-        function loadTicket() {
-            // Get ticket ID from URL query parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const ticketId = parseInt(urlParams.get('id'));
-
-            if (!ticketId) {
-                document.getElementById('ticketTitle').textContent = 'Error: No Ticket ID Provided';
-                document.getElementById('ticketRequester').textContent = 'Please return to the ticket list.';
-                return;
-            }
-
-            // Find the ticket in the global array (loaded from local storage via data.js)
-            const ticket = window.tickets.find(t => t.id === ticketId);
-
-            if (ticket) {
-                renderTicket(ticket);
-            } else {
-                document.getElementById('ticketTitle').textContent = `Error: Ticket #${ticketId} Not Found`;
-            }
+            // Optional: Prevent scrolling the main body content when the menu is open
+            document.body.style.overflow = isOpen ? 'hidden' : 'auto';
         }
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Theme setup
+            // Theme setup (simplified, assumes logic is handled elsewhere or outside this snippet)
             const currentTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', currentTheme);
 
-            // Load the specific ticket requested
-            loadTicket();
+            renderCharts();
+
+            // Attach event listeners for the mobile menu
+            document.getElementById('mobileMenuButton').addEventListener('click', toggleMobileMenu);
+            document.getElementById('sidebarBackdrop').addEventListener('click', toggleMobileMenu);
+
+            // Close menu if a nav link is clicked (to navigate)
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    // Only close the menu if it's currently open (on mobile)
+                    if (window.innerWidth <= 768) {
+                        toggleMobileMenu();
+                    }
+                });
+            });
         });
     </script>
 </body>

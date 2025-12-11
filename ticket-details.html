@@ -1,54 +1,621 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>Ticket Details</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="data.js"></script>
+    <meta charset="UTF-8">
+    <title>Ticket Detail #101 - DeskGo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="./favicon.png">
+    <style>
+        /* PHASE 1: THEME COLORS (CSS Variables) */
+        :root {
+            --color-bg-primary: #f3f4f6;
+            --color-bg-secondary: #ffffff;
+            --color-text-primary: #111827;
+            --color-text-secondary: #4b5563;
+            --color-border: #e5e7eb;
+            --color-accent-bg: #e0f2fe;
+            --color-accent: #2563eb;
+            --color-shadow: rgba(0, 0, 0, 0.05);
+            --color-sidebar-bg: #ffffff;
+            --color-overlay-bg: rgba(0, 0, 0, 0.5);
+            --color-button-success: #10b981;
+            --color-button-danger: #ef4444;
+        }
+
+        [data-theme='dark'] {
+            --color-bg-primary: #111827;
+            --color-bg-secondary: #1f2937;
+            --color-text-primary: #f9fafb;
+            --color-text-secondary: #d1d5db;
+            --color-border: #374151;
+            --color-accent-bg: #1e3a8a;
+            --color-accent: #60a5fa;
+            --color-shadow: rgba(0, 0, 0, 0.05);
+            --color-sidebar-bg: #1f2937;
+            --color-overlay-bg: rgba(0, 0, 0, 0.7);
+            --color-button-success: #34d399;
+            --color-button-danger: #f87171;
+        }
+
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Layout (Desktop Default) - Sidebar added */
+        .sidebar {
+            width: 250px;
+            background-color: var(--color-sidebar-bg);
+            border-right: 1px solid var(--color-border);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Sidebar Elements */
+        .logo a {
+            display: block;
+            margin-bottom: 2rem;
+        }
+
+        .logo img {
+            height: 120px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            transition: background-color 0.2s, color 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-link.active,
+        .nav-link:hover {
+            background-color: var(--color-accent-bg);
+            color: var(--color-accent);
+        }
+
+        .nav-link svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.75rem;
+        }
+
+        .sidebar .btn-primary {
+            margin-top: auto;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            background-color: var(--color-accent);
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar .btn-primary:hover {
+            background-color: #1e40af;
+        }
+
+        /* Header and Mobile Menu Styles (reused) */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        #mobileMenuButton {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--color-text-primary);
+        }
+
+        #mobileMenuButton svg {
+            width: 30px;
+            height: 30px;
+            display: block;
+        }
+
+        /* --- Ticket Detail Specific Styles --- */
+        .ticket-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .ticket-meta {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Layout Grid for Details & Sidebar */
+        .ticket-grid {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            /* Main content + Agent sidebar */
+            gap: 2rem;
+            flex-grow: 1;
+        }
+
+        .main-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .agent-sidebar {
+            background-color: var(--color-bg-secondary);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px var(--color-shadow);
+        }
+
+        .card {
+            background-color: var(--color-bg-secondary);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px var(--color-shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        /* Statuses & Priority Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Status colors */
+        .bg-red-100 {
+            background-color: #fee2e2;
+        }
+
+        .text-red-800 {
+            color: #991b1b;
+        }
+
+        .bg-blue-100 {
+            background-color: #dbeafe;
+        }
+
+        .text-blue-800 {
+            color: #1e40af;
+        }
+
+        .bg-gray-200 {
+            background-color: #e5e7eb;
+        }
+
+        .text-gray-800 {
+            color: #1f2937;
+        }
+
+        .bg-green-100 {
+            background-color: #d1fae5;
+        }
+
+        .text-green-800 {
+            color: #065f46;
+        }
+
+        /* Dark mode badge adjustments */
+        [data-theme='dark'] .bg-red-100 {
+            background-color: #450a0a;
+        }
+
+        [data-theme='dark'] .text-red-800 {
+            color: #fecaca;
+        }
+
+        [data-theme='dark'] .bg-blue-100 {
+            background-color: #1e3a8a;
+        }
+
+        [data-theme='dark'] .text-blue-800 {
+            color: #93c5fd;
+        }
+
+        [data-theme='dark'] .bg-gray-200 {
+            background-color: #374151;
+        }
+
+        [data-theme='dark'] .text-gray-800 {
+            color: #e5e7eb;
+        }
+
+        [data-theme='dark'] .bg-green-100 {
+            background-color: #064e3b;
+        }
+
+        [data-theme='dark'] .text-green-800 {
+            color: #a7f3d0;
+        }
+
+        /* Priority colors */
+        .priority-high {
+            color: var(--color-button-danger);
+            font-weight: 700;
+        }
+
+        .priority-low {
+            color: var(--color-button-success);
+        }
+
+
+        /* Agent Sidebar Details */
+        .agent-sidebar p {
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .agent-sidebar strong {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: var(--color-text-primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .btn {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-success {
+            background-color: var(--color-button-success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #047857;
+        }
+
+        .btn-danger {
+            background-color: var(--color-button-danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+
+        /* Agent Reply Section */
+        .reply-section {
+            margin-top: 1.5rem;
+        }
+
+        .reply-section textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--color-border);
+            border-radius: 0.5rem;
+            background-color: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            min-height: 150px;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        /* ---------------------------------- */
+        /* PHASE 2: MOBILE MEDIA QUERIES      */
+        /* ---------------------------------- */
+
+        @media (max-width: 768px) {
+
+            /* 1. CORE LAYOUT: Sidebar becomes a fixed, off-screen overlay */
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: 250px;
+                transform: translateX(-100%);
+                box-shadow: 2px 0 5px var(--color-shadow);
+                display: flex;
+            }
+
+            /* State when menu button is clicked */
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                padding: 1rem;
+                width: 100%;
+            }
+
+            /* 2. HEADER: Adjust layout and show the menu button */
+            .header {
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            /* Add Mobile Button to Header */
+            #mobileMenuButton {
+                display: block;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+                margin-bottom: 0;
+                /* Push title to the right of the button */
+                margin-left: 0;
+            }
+
+            .ticket-title {
+                font-size: 1.5rem;
+            }
+
+            /* 3. GRID COLLAPSE: Stack the Agent Sidebar below the main details */
+            .ticket-grid {
+                grid-template-columns: 1fr;
+                /* Single column */
+                gap: 1rem;
+            }
+
+            /* Make agent sidebar look like a normal card on mobile */
+            .agent-sidebar {
+                padding: 1rem;
+                order: 2;
+                /* Move agent sidebar to the bottom of the content */
+            }
+
+            .main-detail {
+                order: 1;
+                /* Keep main details at the top */
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            /* New: Backdrop overlay when menu is open */
+            .sidebar-backdrop {
+                display: none;
+            }
+
+            .sidebar-backdrop.open {
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-color: var(--color-overlay-bg);
+                z-index: 999;
+            }
+        }
+    </style>
 </head>
 
 <body>
-  <header>Desko — Ticket Details</header>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-  <div class="container">
-    <div id="ticketBox"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <a href="index.html">
+                <img src="./logo.png" alt="DeskGo Logo">
+            </a>
+        </div>
+        <a href="tickets.html" class="nav-link active">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="M19.5 3a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 3v18a2.25 2.25 0 002.25 2.25h10.5A2.25 2.25 0 0019.5 21V3zM16.5 6a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 3a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 3a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 3a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 3a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6 6.75A.75.75 0 016.75 6h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 6.75zM6 9.75A.75.75 0 016.75 9h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 9.75zM6 12.75A.75.75 0 016.75 12h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 12.75zM6 15.75A.75.75 0 016.75 15h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 15.75zM6 18.75A.75.75 0 016.75 18h2.25a.75.75 0 010 1.5H6.75A.75.75 0 016 18.75z" />
+            </svg>
+            Tickets
+        </a>
+        <a href="dashboard.html" class="nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M3 3.75A.75.75 0 013.75 3h16.5a.75.75 0 01.75.75v16.5a.75.75 0 01-.75.75H3.75a.75.75 0 01-.75-.75V3.75zM6.75 12a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM12.75 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM15.75 9a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM9.75 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
+                    clip-rule="evenodd" />
+            </svg>
+            Dashboard (Charts)
+        </a>
+        <a href="login.html" class="nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M7.5 3a.75.75 0 000 1.5H9v.75A7.5 7.5 0 011.5 12a7.5 7.5 0 017.5-7.5V4.5h1.5a.75.75 0 000-1.5H7.5zm9 9a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM15 12a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H15.75A.75.75 0 0115 12zM7.5 17.25A7.502 7.502 0 011.5 12a7.5 7.5 0 017.5-7.5V5.25H9v-.75A7.5 7.5 0 0116.5 12a7.5 7.5 0 01-7.5 7.5V18h-1.5a.75.75 0 010-1.5H7.5z"
+                    clip-rule="evenodd" />
+            </svg>
+            Logout
+        </a>
 
-    <div class="ai-box">
-      <strong>AI Suggestion:</strong><br>
-      <span id="aiSuggestion">Analyzing ticket...</span>
+        <a href="new-ticket.html" class="btn btn-primary">
+            Submit New Ticket
+        </a>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <button id="mobileMenuButton">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+            <h1>Ticket Detail</h1>
+
+            <a href="tickets.html" class="nav-link"
+                style="margin-left: auto; color: var(--color-accent); font-weight: 600; text-decoration: underline;">
+                &larr; Back to Tickets List
+            </a>
+        </div>
+        <div class="ticket-title" id="ticketTitle">
+            Cannot log in to the dashboard
+        </div>
+        <div class="ticket-meta">
+            <span id="ticketID">Ticket #101</span>
+            |
+            <span id="statusBadge" class="badge bg-red-100 text-red-800">OPEN</span>
+            |
+            <span id="priority">Priority: <span class="priority-high">High</span></span>
+        </div>
+
+        <div class="ticket-grid">
+            <div class="main-detail">
+                <div class="card">
+                    <div class="card-title">Requester Details</div>
+                    <p><strong>Name:</strong> Alice Johnson</p>
+                    <p><strong>Email:</strong> alice.j@company.com</p>
+                    <p><strong>Department:</strong> Sales</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Original Description</div>
+                    <p id="description">
+                        Hi, I am unable to log into the system since yesterday afternoon. I keep getting an error
+                        message "Authentication failed" even though I am sure I am using the correct password. It
+                        started happening after the maintenance window. Please help me gain access as soon as possible,
+                        I have urgent sales reports to pull.
+                    </p>
+                </div>
+
+                <div class="reply-section">
+                    <div class="card-title">Agent Reply</div>
+                    <textarea placeholder="Type your response here..." id="agentReply"></textarea>
+                    <button class="btn btn-success">Send Public Reply</button>
+                    <button class="btn"
+                        style="background-color: var(--color-bg-primary); color: var(--color-text-primary); margin-left: 1rem;">Add
+                        Private Note</button>
+                </div>
+            </div>
+
+            <div class="agent-sidebar">
+                <div class="card-title">Ticket Management</div>
+
+                <p>
+                    <strong>Category:</strong>
+                    <select
+                        style="width: 100%; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--color-border); background-color: var(--color-bg-primary); color: var(--color-text-primary);">
+                        <option>Access</option>
+                        <option>Technical</option>
+                        <option>Billing</option>
+                        <option>Feature Request</option>
+                    </select>
+                </p>
+
+                <p>
+                    <strong>Assigned Agent:</strong>
+                    <select
+                        style="width: 100%; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--color-border); background-color: var(--color-bg-primary); color: var(--color-text-primary);">
+                        <option>You (John Doe)</option>
+                        <option>Jane Smith</option>
+                        <option>IT Team</option>
+                    </select>
+                </p>
+
+                <p><strong>Created Date:</strong> 2024-11-20 10:30 AM</p>
+                <p><strong>Last Update:</strong> 2024-11-20 11:45 AM</p>
+
+                <div class="action-buttons">
+                    <button class="btn btn-success">Mark as RESOLVED</button>
+                    <button class="btn btn-danger">Escalate to Tier 2</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <button onclick="window.location.href='tickets.html'">
-      ← Back to Tickets
-    </button>
-  </div>
+    <script>
+        // --- JAVASCRIPT FOR MOBILE MENU ---
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            const isOpen = sidebar.classList.toggle('open');
+            backdrop.classList.toggle('open', isOpen);
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const id = parseInt(params.get("id"));
+            document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+        }
 
-    const ticket = tickets.find(t => t.id === id);
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme setup
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
 
-    const box = document.getElementById("ticketBox");
+            // Attach event listeners for the mobile menu
+            document.getElementById('mobileMenuButton').addEventListener('click', toggleMobileMenu);
+            document.getElementById('sidebarBackdrop').addEventListener('click', toggleMobileMenu);
 
-    box.innerHTML = `
-      <h2>${ticket.title}</h2>
-      <p>${ticket.description}</p>
-      <p><strong>Category:</strong> ${ticket.category}</p>
-      <p><strong>Status:</strong> ${ticket.status}</p>
-      <p><strong>Priority:</strong> ${ticket.priority}</p>
-    `;
-
-    // Fake AI logic
-    const aiText = document.getElementById("aiSuggestion");
-
-    setTimeout(() => {
-      aiText.textContent = 
-        ticket.priority === "high"
-        ? "High priority ticket detected — Recommend routing to Senior Support."
-        : ticket.priority === "medium"
-          ? "Medium priority — Suggest assigning to Network Specialist."
-          : "Low priority — Best handled by general IT support.";
-    }, 1000);
-  </script>
+            // Close menu if a nav link is clicked
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        if (document.getElementById('sidebar').classList.contains('open')) {
+                            toggleMobileMenu();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </body>
+
 </html>
