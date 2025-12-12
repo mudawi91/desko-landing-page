@@ -1,17 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
-    <title>Tickets List - DeskGo</title>
+    <title>Ticket Detail #101 - DeskGo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="./favicon.png">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap"
         rel="stylesheet">
-
     <style>
         /* PHASE 1: THEME COLORS (CSS Variables) */
         :root {
@@ -48,8 +46,8 @@
         }
 
         body {
-            /* FONT FIX: Applying Josefin Sans */
-            font-family: 'Josefin Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            /* FIX 2: Apply Josefin Sans as the primary font */
+            font-family: 'Josefin Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--color-bg-primary);
             color: var(--color-text-primary);
             display: flex;
@@ -232,77 +230,11 @@
             background-color: #064e3b;
         }
 
-        [data-theme-='dark'] .text-green-800 {
+        [data-theme='dark'] .text-green-800 {
             color: #a7f3d0;
         }
 
-        /* Ticket List Specific Styles */
-        .search-bar {
-            margin-bottom: 1.5rem;
-            display: flex;
-            gap: 1rem;
-        }
-
-        .search-bar input {
-            flex-grow: 1;
-            padding: 0.75rem;
-            border: 1px solid var(--color-border);
-            border-radius: 0.5rem;
-            background-color: var(--color-bg-secondary);
-            color: var(--color-text-primary);
-        }
-
-        .search-bar button {
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            background-color: var(--color-accent);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .tickets-list-container {
-            background-color: var(--color-bg-secondary);
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px var(--color-shadow);
-            overflow-x: auto;
-        }
-
-        .tickets-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 600px;
-        }
-
-        .tickets-table th,
-        .tickets-table td {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--color-border);
-            text-align: left;
-            font-size: 0.9rem;
-        }
-
-        .tickets-table th {
-            background-color: var(--color-bg-primary);
-            color: var(--color-text-secondary);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
-        }
-
-        .tickets-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .tickets-table td a {
-            color: var(--color-accent);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        /* --- Ticket Detail Specific Styles (Included for completeness) --- */
+        /* --- Ticket Detail Specific Styles --- */
         .ticket-title {
             font-size: 1.75rem;
             font-weight: 700;
@@ -408,13 +340,16 @@
             margin-top: 1.5rem;
         }
 
-        /* ---------------------------------- */
-        /* PHASE 2: MOBILE MEDIA QUERIES      */
-        /* ---------------------------------- */
+        /* Mobile adjustments */
+        @media (max-width: 900px) {
+            .ticket-grid {
+                grid-template-columns: 1fr;
+                /* Stack into a single column on smaller screens */
+                gap: 1rem;
+            }
+        }
 
         @media (max-width: 768px) {
-
-            /* 1. CORE LAYOUT: Sidebar becomes a fixed, off-screen overlay */
             .sidebar {
                 position: fixed;
                 top: 0;
@@ -426,7 +361,6 @@
                 display: flex;
             }
 
-            /* State when menu button is clicked */
             .sidebar.open {
                 transform: translateX(0);
             }
@@ -436,7 +370,6 @@
                 width: 100%;
             }
 
-            /* 2. HEADER: Adjust layout and show the menu button */
             .header {
                 flex-direction: row;
                 justify-content: flex-start;
@@ -456,34 +389,6 @@
                 order: 1;
             }
 
-            /* Hide search button on smaller screens to save space */
-            .search-bar button {
-                display: none;
-            }
-
-            /* 3. TICKET TABLE FIX: Hide columns on mobile for better fit */
-            .tickets-table {
-                min-width: 100%;
-            }
-
-            /* Hide Requester and Category */
-            .tickets-table th:nth-child(3),
-            .tickets-table td:nth-child(3) {
-                display: none;
-            }
-
-            .tickets-table th:nth-child(4),
-            .tickets-table td:nth-child(4) {
-                display: none;
-            }
-
-            /* Reduce padding for table */
-            .tickets-table th,
-            .tickets-table td {
-                padding: 0.75rem 1rem;
-            }
-
-            /* New: Backdrop overlay when menu is open */
             .sidebar-backdrop {
                 display: none;
             }
@@ -498,19 +403,12 @@
                 background-color: var(--color-overlay-bg);
                 z-index: 999;
             }
-
-            /* Ticket Detail Mobile Adjustment */
-            .ticket-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
         }
     </style>
 </head>
 
 <body>
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-
     <div class="sidebar" id="sidebar">
         <div class="logo">
             <a href="index.html">
@@ -555,69 +453,84 @@
                         d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                 </svg>
             </button>
-
-            <h1>Ticket List</h1>
+            <h1>Ticket Detail</h1>
+            <a href="tickets.html" class="nav-link"
+                style="margin-left: auto; color: var(--color-accent); font-weight: 600; text-decoration: underline;">
+                &larr; Back to Tickets List
+            </a>
         </div>
 
-        <div class="search-bar">
-            <input type="text" placeholder="Search by ID, title, or requester...">
-            <button>Search</button>
-            <select id="statusFilter"
-                style="padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid var(--color-border); background-color: var(--color-bg-secondary); color: var(--color-text-primary);">
-                <option value="all">All Statuses</option>
-                <option value="open">Open</option>
-                <option value="processing">Processing</option>
-                <option value="resolved">Resolved</option>
-            </select>
+        <div class="ticket-title" id="ticketTitle">
+            Cannot log in to the dashboard
+        </div>
+        <div class="ticket-meta">
+            <span id="ticketID">Ticket #101</span>
+            |
+            <span id="statusBadge" class="badge bg-red-100 text-red-800">OPEN</span>
+            |
+            <span id="priority">Priority: <span class="priority-high">High</span></span>
         </div>
 
-        <div class="tickets-list-container">
-            <table class="tickets-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>Requester</th>
-                        <th>Category</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><a href="ticket-101.html">#101</a></td>
-                        <td>Cannot log in to the dashboard</td>
-                        <td>Alice Johnson</td>
-                        <td>Access</td>
-                        <td><span class="badge bg-red-100 text-red-800">OPEN</span></td>
-                        <td>2024-11-20</td>
-                    </tr>
-                    <tr>
-                        <td><a href="ticket-102.html">#102</a></td>
-                        <td>Missing Q3 Billing Report</td>
-                        <td>Bob Smith</td>
-                        <td>Billing</td>
-                        <td><span class="badge bg-blue-100 text-blue-800">PROCESSING</span></td>
-                        <td>2024-11-19</td>
-                    </tr>
-                    <tr>
-                        <td><a href="ticket-103.html">#103</a></td>
-                        <td>Suggestion: Dark Mode Feature</td>
-                        <td>Charlie Brown</td>
-                        <td>Feature Request</td>
-                        <td><span class="badge bg-gray-200 text-gray-800">CLOSED</span></td>
-                        <td>2024-11-18</td>
-                    </tr>
-                    <tr>
-                        <td><a href="ticket-104.html">#104</a></td>
-                        <td>API endpoint returning 500 error</td>
-                        <td>Diana Prince</td>
-                        <td>Technical</td>
-                        <td><span class="badge bg-green-100 text-green-800">RESOLVED</span></td>
-                        <td>2024-11-17</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="ticket-grid">
+            <div class="main-detail">
+                <div class="card">
+                    <div class="card-title">Requester Details</div>
+                    <p><strong>Name:</strong> Alice Johnson</p>
+                    <p><strong>Email:</strong> alice.j@company.com</p>
+                    <p><strong>Department:</strong> Sales</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Original Description</div>
+                    <p id="description">
+                        I am unable to log in to the main sales dashboard. I get an "Invalid credentials" error every
+                        time, even though my password is correct. This is preventing me from entering new leads and is a
+                        critical issue.
+                    </p>
+                </div>
+
+                <div class="reply-section">
+                    <div class="card-title">Agent Reply</div>
+                    <textarea placeholder="Type your response here..." id="agentReply"></textarea>
+                    <button class="btn btn-success">Send Public Reply</button>
+                    <button class="btn"
+                        style="background-color: var(--color-bg-primary); color: var(--color-text-primary); margin-left: 1rem;">Add
+                        Private Note</button>
+                </div>
+            </div>
+
+            <div class="agent-sidebar">
+                <div class="card-title">Ticket Management</div>
+
+                <p>
+                    <strong>Category:</strong>
+                    <select
+                        style="width: 100%; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--color-border); background-color: var(--color-bg-primary); color: var(--color-text-primary);">
+                        <option selected>Access</option>
+                        <option>Billing</option>
+                        <option>Technical</option>
+                        <option>Feature Request</option>
+                    </select>
+                </p>
+
+                <p>
+                    <strong>Assigned Agent:</strong>
+                    <select
+                        style="width: 100%; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--color-border); background-color: var(--color-bg-primary); color: var(--color-text-primary);">
+                        <option selected>You (John Doe)</option>
+                        <option>Jane Smith</option>
+                        <option>IT Team</option>
+                    </select>
+                </p>
+
+                <p><strong>Created Date:</strong> 2024-11-20 09:00 AM</p>
+                <p><strong>Last Update:</strong> 2024-11-20 09:05 AM</p>
+
+                <div class="action-buttons">
+                    <button class="btn btn-success" id="resolveTicket">Mark as RESOLVED</button>
+                    <button class="btn btn-danger" id="escalateTicket">Escalate to Tier 2</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -628,26 +541,110 @@
             const backdrop = document.getElementById('sidebarBackdrop');
             const isOpen = sidebar.classList.toggle('open');
             backdrop.classList.toggle('open', isOpen);
-
             document.body.style.overflow = isOpen ? 'hidden' : 'auto';
         }
 
-        // --- NEW JAVASCRIPT FOR FILTERING ---
-        function filterTickets() {
-            const filterValue = document.getElementById('statusFilter').value;
-            const table = document.querySelector('.tickets-table tbody');
-            const rows = table.querySelectorAll('tr');
+        // --- JAVASCRIPT FOR BUTTON ACTIONS (UPDATED) ---
+        function setupTicketActions() {
+            const resolveButton = document.getElementById('resolveTicket');
+            const escalateButton = document.getElementById('escalateTicket');
+            const sendReplyButton = document.getElementById('sendReply');
+            const addNoteButton = document.getElementById('addNote');
+            const statusBadge = document.getElementById('statusBadge');
+            const agentReply = document.getElementById('agentReply');
 
-            rows.forEach(row => {
-                const statusCell = row.children[4];
-                if (!statusCell) return;
-                const rowStatus = statusCell.querySelector('.badge').textContent.toLowerCase();
-                const showRow = filterValue === 'all' || rowStatus === filterValue;
-                row.style.display = showRow ? '' : 'none';
+            // Modal elements
+            const modal = document.getElementById('actionModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const modalConfirm = document.getElementById('modalConfirm');
+            const modalCancel = document.getElementById('modalCancel');
+
+            // Helper function to show modal
+            function showModal(title, body, confirmText, confirmClass, onConfirm) {
+                modalTitle.textContent = title;
+                modalBody.textContent = body;
+                modalConfirm.textContent = confirmText;
+
+                // Reset button classes and apply new one
+                modalConfirm.className = 'btn';
+                modalConfirm.classList.add(confirmClass);
+
+                // Clear previous listeners and attach new one
+                const newConfirm = modalConfirm.cloneNode(true);
+                modalConfirm.parentNode.replaceChild(newConfirm, modalConfirm);
+
+                newConfirm.addEventListener('click', () => {
+                    onConfirm();
+                    modal.style.display = 'none';
+                }, {once: true});
+
+                modalCancel.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                    // Re-attach the listeners to modalConfirm for next time
+                    setupTicketActions();
+                }, {once: true});
+
+                modal.style.display = 'flex';
+            }
+
+            // 1. Mark as RESOLVED action
+            resolveButton.addEventListener('click', () => {
+                if (statusBadge.textContent.toUpperCase() !== 'RESOLVED') {
+                    showModal(
+                        'Confirm Resolution',
+                        'Are you sure you want to mark Ticket #101 as RESOLVED? This will lock the reply section.',
+                        'Yes, Resolve Ticket',
+                        'btn-success',
+                        () => {
+                            // Action to perform on confirmation
+                            statusBadge.textContent = 'RESOLVED';
+                            statusBadge.className = 'badge bg-green-100 text-green-800';
+                            agentReply.disabled = true;
+                            sendReplyButton.disabled = true;
+                            addNoteButton.disabled = true;
+                        }
+                    );
+                } else {
+                    alert('This ticket is already RESOLVED.');
+                }
+            });
+
+            // 2. Escalate action
+            escalateButton.addEventListener('click', () => {
+                showModal(
+                    'Confirm Escalation',
+                    'Are you sure you want to ESCALATE Ticket #101 to Tier 2 Support?',
+                    'Yes, Escalate',
+                    'btn-danger', // Using danger color for escalation
+                    () => {
+                        // Action to perform on confirmation
+                        alert('Ticket #101 is now ESCALATED to Tier 2.');
+                    }
+                );
+            });
+
+            // 3. Send Public Reply action (UNCHANGED)
+            sendReplyButton.addEventListener('click', () => {
+                if (agentReply.value.trim() !== '') {
+                    alert('Public Reply Sent for Ticket #101: "' + agentReply.value.substring(0, 50).trim() + '..."');
+                    agentReply.value = ''; // Clear the input
+                } else {
+                    alert('Please enter a reply before sending.');
+                }
+            });
+
+            // 4. Add Private Note action (UNCHANGED)
+            addNoteButton.addEventListener('click', () => {
+                if (agentReply.value.trim() !== '') {
+                    alert('Private Note Added for Ticket #101: "' + agentReply.value.substring(0, 50).trim() + '..."');
+                    agentReply.value = ''; // Clear the input
+                } else {
+                    alert('Please enter a note before adding.');
+                }
             });
         }
 
-        // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
             // Theme setup
             const currentTheme = localStorage.getItem('theme') || 'light';
@@ -656,6 +653,9 @@
             // Attach event listeners for the mobile menu
             document.getElementById('mobileMenuButton').addEventListener('click', toggleMobileMenu);
             document.getElementById('sidebarBackdrop').addEventListener('click', toggleMobileMenu);
+
+            // Setup button actions
+            setupTicketActions();
 
             // Close menu if a nav link is clicked
             document.querySelectorAll('.nav-link').forEach(link => {
@@ -667,14 +667,22 @@
                     }
                 });
             });
-
-            const statusFilter = document.getElementById('statusFilter');
-            if (statusFilter) {
-                statusFilter.addEventListener('change', filterTickets);
-            }
-            filterTickets();
         });
     </script>
+    <div id="actionModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--color-overlay-bg); z-index: 2000; align-items: center; justify-content: center;">
+        <div
+            style="background-color: var(--color-bg-secondary); padding: 2rem; border-radius: 0.75rem; width: 90%; max-width: 400px; box-shadow: 0 4px 6px var(--color-shadow);">
+            <h3 id="modalTitle" class="card-title" style="margin-bottom: 0.5rem; border-bottom: none;">Confirm Action
+            </h3>
+            <p id="modalBody" style="margin-bottom: 1.5rem; color: var(--color-text-secondary);"></p>
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button class="btn" id="modalCancel"
+                    style="background-color: var(--color-bg-primary); color: var(--color-text-primary);">Cancel</button>
+                <button class="btn btn-success" id="modalConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
